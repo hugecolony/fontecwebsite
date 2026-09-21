@@ -5,12 +5,18 @@ import type { WCOrder, CreateOrderPayload } from '@/types/order';
 const WP_HOST = (process.env.NEXT_PUBLIC_WP_URL || 'https://fontecmobiles.com').replace(/\/$/, '');
 const WC_BASE = `${WP_HOST}/wp-json/wc/v3`;
 
-const FETCH_TIMEOUT_MS = 8000; // 8 second timeout threshold
+// Increased timeout threshold from 8s to 15s to handle slower WordPress host responses
+const FETCH_TIMEOUT_MS = 15000;
 
 function wcAuthHeader(): HeadersInit {
-  const credentials = Buffer.from(
-    `${process.env.WC_CONSUMER_KEY || ''}:${process.env.WC_CONSUMER_SECRET || ''}`
-  ).toString('base64');
+  const key = process.env.WC_CONSUMER_KEY || '';
+  const secret = process.env.WC_CONSUMER_SECRET || '';
+
+  if (!key || !secret) {
+    console.warn('[WC Warning] WC_CONSUMER_KEY or WC_CONSUMER_SECRET is missing in .env.local');
+  }
+
+  const credentials = Buffer.from(`${key}:${secret}`).toString('base64');
   return {
     Authorization: `Basic ${credentials}`,
     'Content-Type': 'application/json',
@@ -28,7 +34,6 @@ async function wcFetch<T>(
   try {
     const res = await fetch(url, {
       ...options,
-      // Aborts fetch if WooCommerce takes longer than 8 seconds
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       headers: {
         ...wcAuthHeader(),
@@ -37,7 +42,8 @@ async function wcFetch<T>(
     });
 
     if (!res.ok) {
-      console.warn(`[WC] Fetch failed for ${endpoint}: ${res.status} ${res.statusText}`);
+      const errorText = await res.text().catch(() => '');
+      console.warn(`[WC Error] ${endpoint} returned status ${res.status}: ${res.statusText}`, errorText);
       return null;
     }
 
@@ -46,7 +52,7 @@ async function wcFetch<T>(
     if (error.name === 'TimeoutError' || error.name === 'AbortError') {
       console.warn(`[WC Timeout] Request to ${endpoint} exceeded ${FETCH_TIMEOUT_MS}ms threshold.`);
     } else {
-      console.warn(`[WC Error] Fetch failed for ${endpoint}:`, error?.message || error);
+      console.warn(`[WC Exception] Fetch failed for ${endpoint}:`, error?.message || error);
     }
     return null;
   }
@@ -80,11 +86,12 @@ export async function getProducts(
 }
 
 export async function getProductBySlug(slug: string): Promise<WCProduct | null> {
-  const data = await wcFetch<WCProduct[]>(`/products?slug=${slug}`, {
+  const encodedSlug = encodeURIComponent(slug);
+  const data = await wcFetch<WCProduct[]>(`/products?slug=${encodedSlug}`, {
     next: { revalidate: 60 },
   });
 
-  if (!data || !Array.isArray(data)) return null;
+  if (!data || !Array.isArray(data) || data.length === 0) return null;
   return data[0] ?? null;
 }
 
@@ -94,12 +101,20 @@ export async function getProductById(id: number): Promise<WCProduct | null> {
   });
 }
 
+// Fallback: If no featured products are marked in WordPress, return recent published products
 export async function getFeaturedProducts(limit = 8): Promise<WCProduct[]> {
-  return getProducts({ featured: 'true', per_page: String(limit) });
+  const featured = await getProducts({ featured: 'true', per_page: String(limit) });
+  
+  if (featured.length === 0) {
+    console.warn('[WC Info] No products starred as "featured" in WordPress. Fetching standard products fallback.');
+    return getProducts({ per_page: String(limit) });
+  }
+
+  return featured;
 }
 
 export async function getRelatedProducts(ids: number[]): Promise<WCProduct[]> {
-  if (!ids.length) return [];
+  if (!ids || !ids.length) return [];
   return getProducts({ include: ids.slice(0, 4).join(','), per_page: '4' });
 }
 
