@@ -132,16 +132,24 @@ export function ProductCard({ product, className, badge }: ProductCardProps) {
             )}
 
             {/* Main Image Display */}
-            <div className="relative flex shrink-0 overflow-hidden items-center justify-center w-full h-full p-2">
-              <Image
-                src={currentImage}
-                alt={imageAlt}
-                fill
-                sizes="(max-width: 768px) 85vw, 300px"
-                unoptimized={currentImage.includes('placehold.co') || currentImage.includes('.local')}
-                className="relative z-10 object-contain transition-transform duration-500 group-hover:scale-110 pointer-events-none"
-              />
-            </div>
+           <div className="relative flex shrink-0 overflow-hidden items-center justify-center w-full h-full p-2">
+  <Image
+    src={currentImage}
+    alt={imageAlt || 'Product image'}
+    fill
+    sizes="(max-width: 768px) 85vw, 300px"
+    // Safe fallback for placeholders, local files, and external WordPress URLs
+    unoptimized={
+      currentImage.includes('placehold.co') || 
+      currentImage.includes('.local') || 
+      currentImage.startsWith('http')
+    }
+    // REMOVED 'relative' from className so 'fill' works correctly
+    className="z-10 object-contain transition-transform duration-500 group-hover:scale-110 pointer-events-none"
+    // Add 'priority' if this image is visible above the fold on initial page load
+    // priority
+  />
+</div>
 
             {/* Gallery Thumbnail Dots */}
             {images.length > 1 && (

@@ -185,8 +185,9 @@ export function CategoriesSection({ categories: initialCategories }: CategoriesS
                         src={cat.imageUrl}
                         alt={cat.name}
                         fill
-                        sizes="220px"
-                        className="object-contain p-5 group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        priority
+                        className="object-contain"
                         unoptimized
                       />
                     ) : (

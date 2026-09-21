@@ -199,11 +199,14 @@ export function ProductDetailClient({ product, variations = [] }: ProductDetailC
             <div className="relative w-full aspect-[4/3] max-h-[600px] my-auto">
               <Image
                 src={activeImageSrc}
-                alt={product.images[selectedImage]?.alt || product.name}
+                alt={product?.images?.[selectedImage]?.alt || product?.name || 'Product Image'}
                 fill
                 priority
                 className="object-contain"
-                sizes="100vw"
+                // Serve full width on mobile, half width on tablet/desktop, capped at 600px
+                sizes="(max-width: 768px) 100vw, 50vw"  
+                // Prevents optimization issues on external WordPress URLs
+                unoptimized={typeof activeImageSrc === 'string' && activeImageSrc.startsWith('http')}
               />
             </div>
 

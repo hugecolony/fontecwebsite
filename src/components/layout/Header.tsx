@@ -75,10 +75,10 @@ export function Header() {
                 {logoUrl ? (
                   <Image
                     src={logoUrl}
-                    alt="GearCell Logo"
-                    fill
-                    sizes="128px"
-                    className="object-contain object-left"
+                    alt="Fontec Logo"
+                    width={180}
+                    height={50}
+                    className="w-auto h-auto" // or style={{ height: 'auto', width: 'auto' }}
                     priority
                   />
                 ) : (
