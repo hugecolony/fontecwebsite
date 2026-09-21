@@ -71,13 +71,13 @@ export function Header() {
               className="flex items-center gap-2.5 font-bold text-xl tracking-tight text-foreground hover:opacity-90 transition-opacity"
             >
               {/* Adjust w-32 (width) and h-9 (height) as needed */}
-              <div className="relative w-32 h-9 flex items-center justify-center">
+              <div className="relative w-auto h-auto flex items-center justify-center">
                 {logoUrl ? (
                   <Image
                     src={logoUrl}
                     alt="Fontec Logo"
-                    width={180}
-                    height={50}
+                    width={90}
+                    height={90}
                     className="w-auto h-auto" // or style={{ height: 'auto', width: 'auto' }}
                     priority
                   />
