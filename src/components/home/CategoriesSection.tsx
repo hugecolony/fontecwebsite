@@ -8,22 +8,73 @@ import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 
 const WP_BASE_URL = 'https://fontecmobiles.com';
 
-interface DynamicCategory {
+export interface DynamicCategory {
   id: number;
   name: string;
   slug: string;
   imageUrl: string | null;
 }
 
+interface CategoriesSectionProps {
+  categories?: any[];
+}
 
+// Helper function to normalize category objects from server or WP REST API
+function formatCategories(wcCats: any[]): DynamicCategory[] {
+  if (!Array.isArray(wcCats)) return [];
 
+  const filteredWcCats = wcCats.filter((wcMatch) => {
+    const slug = (wcMatch?.slug || '').toLowerCase();
+    const name = (wcMatch?.name || '').toLowerCase();
+    return slug !== 'uncategorized' && name !== 'uncategorized';
+  });
 
-export function CategoriesSection() {
-  const [categories, setCategories] = useState<DynamicCategory[]>([]);
-  const [loading, setLoading] = useState(true);
+  return filteredWcCats.map((wcMatch) => {
+    let imageUrl: string | null = null;
+    const img = wcMatch?.image ?? null;
+
+    if (typeof img === 'string' && img.startsWith('http')) {
+      imageUrl = img;
+    } else if (img?.src) {
+      imageUrl = img.src;
+    } else if (img?.thumbnail) {
+      imageUrl = img.thumbnail;
+    } else if (Array.isArray(wcMatch?.images) && wcMatch.images[0]?.src) {
+      imageUrl = wcMatch.images[0].src;
+    } else if (wcMatch?.thumbnail) {
+      imageUrl = wcMatch.thumbnail;
+    } else if (wcMatch?.imageUrl) {
+      imageUrl = wcMatch.imageUrl;
+    }
+
+    return {
+      id: wcMatch.id,
+      name: wcMatch.name,
+      slug: wcMatch.slug,
+      imageUrl,
+    };
+  });
+}
+
+export function CategoriesSection({ categories: initialCategories }: CategoriesSectionProps) {
+  const [categories, setCategories] = useState<DynamicCategory[]>(() => {
+    return initialCategories && initialCategories.length > 0
+      ? formatCategories(initialCategories)
+      : [];
+  });
+  const [loading, setLoading] = useState<boolean>(() => {
+    return !initialCategories || initialCategories.length === 0;
+  });
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (initialCategories && initialCategories.length > 0) {
+      setCategories(formatCategories(initialCategories));
+      setLoading(false);
+      return;
+    }
+
     async function fetchDynamicCategories() {
       try {
         const res = await fetch(
@@ -35,39 +86,7 @@ export function CategoriesSection() {
         }
 
         const wcCats: any[] = await res.json();
-
-        // Filter out "uncategorized" categories (case-insensitive check on slug and name)
-        const filteredWcCats = wcCats.filter((wcMatch) => {
-          const slug = (wcMatch?.slug || '').toLowerCase();
-          const name = (wcMatch?.name || '').toLowerCase();
-          return slug !== 'uncategorized' && name !== 'uncategorized';
-        });
-
-        const result: DynamicCategory[] = filteredWcCats.map((wcMatch) => {
-          let imageUrl: string | null = null;
-          const img = wcMatch?.image ?? null;
-
-          if (typeof img === 'string' && img.startsWith('http')) {
-            imageUrl = img;
-          } else if (img?.src) {
-            imageUrl = img.src;
-          } else if (img?.thumbnail) {
-            imageUrl = img.thumbnail;
-          } else if (Array.isArray(wcMatch?.images) && wcMatch.images[0]?.src) {
-            imageUrl = wcMatch.images[0].src;
-          } else if (wcMatch?.thumbnail) {
-            imageUrl = wcMatch.thumbnail;
-          }
-
-          return {
-            id: wcMatch.id,
-            name: wcMatch.name,
-            slug: wcMatch.slug,
-            imageUrl,
-          };
-        });
-
-        setCategories(result);
+        setCategories(formatCategories(wcCats));
       } catch (error) {
         console.error('Error loading WordPress categories:', error);
       } finally {
@@ -76,7 +95,7 @@ export function CategoriesSection() {
     }
 
     fetchDynamicCategories();
-  }, []);
+  }, [initialCategories]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -89,22 +108,21 @@ export function CategoriesSection() {
     }
   };
 
-
   return (
     <section className="mt-12 px-4 md:px-8" aria-labelledby="category-heading">
       <div className="max-w-screen mx-auto">
-        
         {/* Centered Header Section matching screenshot */}
         <div className="mb-10 text-center relative">
-          <h2 id="category-heading" className="text-2xl sm:text-3xl font-black text-slate-900 tracking-wider uppercase inline-flex items-center gap-2">
+          <h2
+            id="category-heading"
+            className="text-2xl sm:text-3xl font-black text-slate-900 tracking-wider uppercase inline-flex items-center gap-2"
+          >
             EXPLORE BY <span className="text-red-500">CATEGORIES</span>
           </h2>
 
-          
-
           {/* Navigation Controls positioned on the sides or top-right */}
           <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden md:flex items-center gap-2">
-          {/* View All Categories Button */}
+            {/* View All Categories Button */}
             <Link
               href="/categories"
               className="hidden sm:inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/40 dark:bg-red-800/400 backdrop-blur-xl border border-white/60 dark:border-white/10 text-xs font-bold uppercase tracking-wider text-slate-800 hover:bg-red-600 hover:text-white hover:border-transparent transition-all duration-300 shadow-sm"
@@ -155,36 +173,36 @@ export function CategoriesSection() {
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="w-[180px] sm:w-[220px] shrink-0 text-center snap-start"
               >
-              {/* Uppercase Category Label */}
-              <Link
-                href={`/shop?category=${cat.slug}`}
-                className="block group focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded-full"
-              >
-                {/* Larger Circular Image Container with red Ring & Soft Shadow */}
-                <div className="w-[180px] sm:w-[220px] aspect-square rounded-full overflow-hidden mx-auto relative bg-transparent border-2 border-red-600 shadow-[0_4px_20px_rgba(239,68,68,0.15)] group-hover:border-red-500 group-hover:shadow-[0_6px_25px_rgba(239,68,68,0.3)] transition-all duration-300 p-5 flex items-center justify-center">
-                  {cat.imageUrl ? (
-                    <Image
-                      src={cat.imageUrl}
-                      alt={cat.name}
-                      fill
-                      sizes="220px"
-                      className="object-contain p-5 group-hover:scale-105 transition-transform duration-500"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-slate-400 font-medium text-xs text-center">
-                      No Image
-                    </div>
-                  )}
-                </div>
-
                 {/* Uppercase Category Label */}
-                <div className="mt-4">
-                  <h3 className="text-slate-800 text-base sm:text-lg font-black uppercase tracking-wider group-hover:text-red-600 transition-colors truncate px-1">
-                    {cat.name}
-                  </h3>
-                </div>
-              </Link>
+                <Link
+                  href={`/shop?category=${cat.slug}`}
+                  className="block group focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded-full"
+                >
+                  {/* Larger Circular Image Container with red Ring & Soft Shadow */}
+                  <div className="w-[180px] sm:w-[220px] aspect-square rounded-full overflow-hidden mx-auto relative bg-transparent border-2 border-red-600 shadow-[0_4px_20px_rgba(239,68,68,0.15)] group-hover:border-red-500 group-hover:shadow-[0_6px_25px_rgba(239,68,68,0.3)] transition-all duration-300 p-5 flex items-center justify-center">
+                    {cat.imageUrl ? (
+                      <Image
+                        src={cat.imageUrl}
+                        alt={cat.name}
+                        fill
+                        sizes="220px"
+                        className="object-contain p-5 group-hover:scale-105 transition-transform duration-500"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-slate-400 font-medium text-xs text-center">
+                        No Image
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Uppercase Category Label */}
+                  <div className="mt-4">
+                    <h3 className="text-slate-800 text-base sm:text-lg font-black uppercase tracking-wider group-hover:text-red-600 transition-colors truncate px-1">
+                      {cat.name}
+                    </h3>
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </div>

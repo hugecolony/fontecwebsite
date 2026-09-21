@@ -1,18 +1,15 @@
 import { Suspense } from 'react';
 
-
-
 import { HeroSection } from '@/components/home/HeroSection';
 import { CategoriesSection } from '@/components/home/CategoriesSection';
 import { FeaturedProducts } from '@/components/home/FeaturedProducts';
 import { FeatureBanner } from '@/components/home/FeatureBanner';
 import { getProducts, getCategories } from '@/lib/woocommerce';
 import StrechedBanner from '@/components/home/StrechedBanner';
-import {FeatureHighlight} from '@/components/home/FeatureHighlight';
-import {ScrollingPromotion} from '@/components/home/ScrollingPromotion';
-import {VideoSlider} from '@/components/home/VideoSlider';
-import {ImageSlider} from '@/components/home/ImageSlider';
-
+import { FeatureHighlight } from '@/components/home/FeatureHighlight';
+import { ScrollingPromotion } from '@/components/home/ScrollingPromotion';
+import { VideoSlider } from '@/components/home/VideoSlider';
+import { ImageSlider } from '@/components/home/ImageSlider';
 
 // Never throw from the page — always fall back to empty arrays so the
 // homepage renders with mock data even when WordPress is unreachable.
@@ -39,21 +36,19 @@ export default async function HomePage() {
   ]);
 
   return (
-    <>
- 
-
- 
+    <> 
       <Suspense fallback={null}>
-        <CategoriesSection />
-         <ScrollingPromotion/>
-         
+        <CategoriesSection categories={categories} />
+        <ScrollingPromotion />
       </Suspense>
-           <FeatureBanner />
+      
+      <FeatureBanner />
+      
       <Suspense fallback={null}>
-        <FeatureHighlight/>
+        <FeatureHighlight />
         <FeaturedProducts products={products} />
-        <VideoSlider/>
-        <ImageSlider></ImageSlider>
+        <VideoSlider />
+        <ImageSlider />
       </Suspense>
     </>
   );
