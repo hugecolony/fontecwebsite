@@ -1,13 +1,15 @@
-
 import type { WCProduct, WCProductCategory } from '@/types/product';
 import type { WCOrder, CreateOrderPayload } from '@/types/order';
 
-const WC_BASE = `${process.env.NEXT_PUBLIC_WP_URL}/wp-json/wc/v3`;
+// Fall back to your WordPress domain if process.env.NEXT_PUBLIC_WP_URL is undefined
+const WP_HOST = (process.env.NEXT_PUBLIC_WP_URL || 'https://fontecmobiles.com').replace(/\/$/, '');
+const WC_BASE = `${WP_HOST}/wp-json/wc/v3`;
+
 const FETCH_TIMEOUT_MS = 8000; // 8 second timeout threshold
 
 function wcAuthHeader(): HeadersInit {
   const credentials = Buffer.from(
-    `${process.env.WC_CONSUMER_KEY}:${process.env.WC_CONSUMER_SECRET}`
+    `${process.env.WC_CONSUMER_KEY || ''}:${process.env.WC_CONSUMER_SECRET || ''}`
   ).toString('base64');
   return {
     Authorization: `Basic ${credentials}`,
