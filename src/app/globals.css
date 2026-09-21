@@ -1,26 +1,342 @@
 @import "tailwindcss";
 
+/* ─── CSS Variables ─────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colors (Red Theme) */
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-elevated: #f1f5f9;
+  --border: rgba(220, 38, 38, 0.08);
+  --border-hover: rgba(220, 38, 38, 0.18);
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --accent: #dc2626;          /* Red primary (Tailwind red-600) */
+  --accent-hover: #b91c1c;    /* Red hover (Tailwind red-700) */
+  --accent-glow: rgba(220, 38, 38, 0.25);
+  --danger: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+
+  /* Glassmorphism Specs (Frosted Light with Red Subtle Tinting) */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-bg-hover: rgba(255, 255, 255, 0.85);
+  --glass-bg-active: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(220, 38, 38, 0.1);
+  --glass-border-light: rgba(220, 38, 38, 0.18);
+
+  /* Glass Reflections & Lighting (Red-tinted atmospheric shadow) */
+  --glass-shadow: 0 8px 32px 0 rgba(220, 38, 38, 0.07);
+  --glass-specular: inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+  --glass-blur: blur(16px);
+  --glass-blur-heavy: blur(28px);
 }
 
+/* Optional Utility Classes for applying your glassmorphic variables */
+.glass-panel {
+  background-color: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: var(--glass-specular);
+}
+
+.glass-panel:hover {
+  background-color: var(--glass-bg-hover);
+  border-color: var(--glass-border-light);
+} 
+/* ─── Tailwind v4 Theme Tokens ─────────────────────────────────────────── */
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-glass-bg: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Base Styles & Ambient Background Glow ────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ambient Background Blobs (Adjusted for Light Mode) */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+body::before {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+  top: -100px;
+  left: -100px;
+}
+
+body::after {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, rgba(255, 255, 255, 0) 70%);
+  bottom: 10%;
+  right: -150px;
+}
+
+/* ─── Core Glassmorphism Utilities ─────────────────────────────────────── */
+/* Basic Glass Panel */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-specular), var(--glass-shadow);
+}
+
+.glass-hover {
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+}
+.glass-hover:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-light);
+  box-shadow: var(--glass-specular), 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+/* E-Commerce Product Card Glass */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: var(--glass-specular), 0 10px 30px rgba(15, 23, 42, 0.05);
+  border-radius: 1.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--glass-border-light);
+  transform: translateY(-4px);
+  box-shadow: var(--glass-specular), 0 20px 40px rgba(15, 23, 42, 0.08), 0 0 20px var(--accent-glow);
+}
+
+/* Fixed Header / Topbar Glass */
+.glass-header {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+/* Glass Inputs (Search bar, Promo Code, Checkout Form) */
+.glass-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  color: var(--foreground);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+.glass-input::placeholder {
+  color: var(--muted);
+}
+.glass-input:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow), var(--glass-specular);
+}
+
+/* Glass Badges (Sale Tags, Category Pills, In Stock Indicators) */
+.glass-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-badge-accent {
+  background: rgba(79, 70, 229, 0.1);
+  border-color: rgba(79, 70, 229, 0.25);
+  color: var(--accent);
+}
+
+/* Glass Drawers & Modals (Cart Drawer, Filter Overlay) */
+.glass-drawer {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border-left: 1px solid var(--glass-border);
+  box-shadow: -10px 0 40px rgba(15, 23, 42, 0.1);
+}
+
+/* ─── E-Commerce Interactive Elements ───────────────────────────────────── */
+/* Product Image Container Zoom */
+.product-image-zoom {
+  overflow: hidden;
+  position: relative;
+  border-radius: 0.875rem;
+}
+.product-image-zoom img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.product-image-zoom:hover img {
+  transform: scale(1.08);
+}
+
+/* Product Glass Overlay Shine */
+.product-image-zoom::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  box-shadow: 0 4px 15px var(--accent-glow), var(--glass-specular);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 6px 24px var(--accent-glow), var(--glass-specular);
+  transform: translateY(-2px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-glass {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  color: var(--foreground);
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--glass-shadow);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-glass:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-light);
+  transform: translateY(-1px);
+}
+
+/* ─── Scrollbars & Focus States ─────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.8);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ─── Skeleton Loading Shimmer ──────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.04) 25%,
+    rgba(0, 0, 0, 0.09) 50%,
+    rgba(0, 0, 0, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
