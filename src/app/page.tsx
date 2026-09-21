@@ -44,9 +44,6 @@ export default async function HomePage() {
 
  
       <Suspense fallback={null}>
-       
-              <HeroSection />
-      <StrechedBanner/>
         <CategoriesSection />
          <ScrollingPromotion/>
          
