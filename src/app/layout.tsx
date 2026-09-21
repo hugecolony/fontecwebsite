@@ -6,6 +6,8 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { Topbar } from '@/components/layout/Topbar';
+import ConfettiPopper from '@/components/layout/ConfettiPopper'
+import { Suspense } from 'react';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -36,11 +38,14 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <CartProvider>
-          <Topbar />
-          <Header />
-          <CartDrawer />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <Suspense>
+            <ConfettiPopper/>
+            <Topbar />
+            <Header />
+            <CartDrawer />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            </Suspense>
         </CartProvider>
       </body>
     </html>

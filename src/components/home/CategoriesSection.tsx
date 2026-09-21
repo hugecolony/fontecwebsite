@@ -15,6 +15,9 @@ interface DynamicCategory {
   imageUrl: string | null;
 }
 
+
+
+
 export function CategoriesSection() {
   const [categories, setCategories] = useState<DynamicCategory[]>([]);
   const [loading, setLoading] = useState(true);

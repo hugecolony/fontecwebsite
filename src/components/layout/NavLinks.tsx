@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { cn } from '@/lib/utils';

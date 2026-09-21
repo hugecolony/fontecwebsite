@@ -1,4 +1,7 @@
 import { Suspense } from 'react';
+
+
+
 import { HeroSection } from '@/components/home/HeroSection';
 import { CategoriesSection } from '@/components/home/CategoriesSection';
 import { FeaturedProducts } from '@/components/home/FeaturedProducts';
@@ -9,6 +12,7 @@ import {FeatureHighlight} from '@/components/home/FeatureHighlight';
 import {ScrollingPromotion} from '@/components/home/ScrollingPromotion';
 import {VideoSlider} from '@/components/home/VideoSlider';
 import {ImageSlider} from '@/components/home/ImageSlider';
+
 
 // Never throw from the page — always fall back to empty arrays so the
 // homepage renders with mock data even when WordPress is unreachable.
@@ -37,11 +41,13 @@ export default async function HomePage() {
   return (
     <>
  
-      <HeroSection />
-      <StrechedBanner/>
+
  
       <Suspense fallback={null}>
-        <CategoriesSection categories={categories} />
+       
+              <HeroSection />
+      <StrechedBanner/>
+        <CategoriesSection />
          <ScrollingPromotion/>
          
       </Suspense>
