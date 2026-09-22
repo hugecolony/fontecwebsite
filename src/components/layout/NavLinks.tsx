@@ -63,7 +63,7 @@ interface NavLinksProps {
 /* ─────────────────────────────────────────────────────────────────────────────
    Helper Functions
 ───────────────────────────────────────────────────────────────────────────── */
-function getCategoryImageUrl(cat: WPCategory): string | null {
+function getCategoryImageUrl(cat?: WPCategory | null): string | null {
   if (!cat) return null;
 
   if (typeof cat.image === 'object' && cat.image !== null) {
@@ -444,7 +444,7 @@ function ShopAllDropdownItem({
       setLoadingSubs(true);
       try {
         const res = await fetch(
-          `${WP_BASE_URL}/wp-json/wc/store/v1/products/categories?parent=${hoveredCat.id}&per_page=20`
+          `${WP_BASE_URL}/wp-json/wc/store/v1/products/categories?parent=${hoveredCat?.id}&per_page=20`
         );
         if (res.ok) {
           const data: WPCategory[] = await res.json();
@@ -695,7 +695,7 @@ function ShopAllDropdownItem({
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-black tracking-widest text-slate-500 uppercase flex items-center gap-1.5">
                     <Layers size={14} className="text-red-500" />
-                    {hoveredCat ? `${hoveredCat.name} Subcategories` : 'Subcategories'}
+                    {hoveredCat?.name ? `${hoveredCat.name} Subcategories` : 'Subcategories'}
                   </span>
                 </div>
                 <SubcategoryBentoGridPanel
@@ -703,7 +703,7 @@ function ShopAllDropdownItem({
                   loading={loadingSubs}
                   onNavigate={() => setIsOpen(false)}
                   onHoverSub={(sub) => setHoveredSubcat(sub)}
-                  emptyLabel={hoveredCat ? `No subcategories in ${hoveredCat.name} yet.` : undefined}
+                  emptyLabel={hoveredCat?.name ? `No subcategories in ${hoveredCat.name} yet.` : undefined}
                 />
               </div>
             </div>
