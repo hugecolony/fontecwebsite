@@ -1,4 +1,4 @@
-'use type';
+'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -291,7 +291,7 @@ function SubcategoryBentoGridPanel({
 
   return (
     <div className="max-h-[440px] overflow-y-auto pr-3 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent">
-      <div className="grid grid-cols-2 gap-4 pb-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1">
         {subcategories.map((sub) => (
           <SubcategoryBentoTile
             key={sub.id}
@@ -346,10 +346,43 @@ export function NavLinks({ mobile, onClose }: NavLinksProps) {
   }, []);
 
   if (loadingCats) {
+    if (mobile) {
+      return (
+        <div className="fixed inset-x-0 top-0 bottom-0 z-50 w-full h-[100dvh] bg-white/95 backdrop-blur-3xl backdrop-saturate-200 text-slate-600 flex flex-col p-4 sm:p-6 overflow-y-auto font-sans">
+          {/* Mirrors the exact close button area of the loaded state */}
+          <div className="flex items-center justify-end pb-3 mb-3 shrink-0">
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="p-2 rounded-2xl text-slate-400 hover:bg-slate-100 transition-colors cursor-pointer ml-2"
+                aria-label="Close menu"
+              >
+                <X size={24} />
+              </button>
+            )}
+          </div>
+          
+          {/* Mirrors the exact gap and padding of the loaded categories */}
+          <div className="flex flex-col gap-3 pb-6">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div 
+                key={i} 
+                className="h-12 w-full rounded-2xl bg-slate-200/60 animate-pulse border border-slate-200/80 shrink-0" 
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Desktop Loading State
     return (
-      <div className={cn('flex gap-2 items-center font-sans', mobile ? 'fixed inset-0 z-50 w-screen h-screen bg-white/90 backdrop-blur-2xl p-5 flex-col overflow-y-auto' : '')}>
+      <div className="relative inline-flex items-center gap-2 p-1.5 rounded-3xl font-sans">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className={cn('rounded-2xl bg-white/70 backdrop-blur-md animate-pulse border border-slate-200', mobile ? 'h-12 w-full' : 'h-11 w-11 rounded-full')} />
+          <div 
+            key={i} 
+            className="h-11 w-11 rounded-3xl bg-slate-200/60 animate-pulse border border-slate-200/80 shrink-0" 
+          />
         ))}
       </div>
     );
@@ -525,10 +558,10 @@ function ShopAllDropdownItem({
   if (mobile) {
     return (
       <div className="w-full font-sans">
-        <div className="flex items-center justify-between w-full px-5 py-3.5 rounded-2xl bg-white/70 border border-slate-200/80 backdrop-blur-md transition-colors hover:bg-white shadow-sm">
+        <div className="flex items-center justify-between w-full px-5 h-12 rounded-2xl bg-white/70 border border-slate-200/80 backdrop-blur-md transition-colors hover:bg-white shadow-sm">
           <div className="flex items-center gap-3.5 min-w-0">
-            <div className="relative w-9 h-9 shrink-0 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600">
-              <Store size={18} />
+            <div className="relative w-8 h-8 shrink-0 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600">
+              <Store size={16} />
             </div>
             <Link
               href="/shop"
@@ -600,13 +633,13 @@ function ShopAllDropdownItem({
           href="/shop"
           onClick={onClose}
           className={cn(
-            'group relative p-3 rounded-3xl text-sm sm:text-base font-extrabold tracking-wide transition-all duration-300 ease-out whitespace-nowrap flex items-center cursor-pointer bg-transparent',
+            'group relative px-3 py-2 h-11 rounded-3xl text-sm sm:text-base font-extrabold tracking-wide transition-all duration-300 ease-out whitespace-nowrap flex items-center cursor-pointer bg-transparent',
             isActive || isOpen
-              ? 'text-red-600 border-red-200'
+              ? 'text-red-600 border-red-200 bg-white/50'
               : 'text-slate-700 border-transparent hover:border-slate-300'
           )}
         >
-          <Store size={18} className="shrink-0 text-slate-600" />
+          <Store size={18} className="shrink-0 text-slate-600 group-hover:text-red-600 transition-colors" />
 
           <div className="flex items-center overflow-hidden whitespace-nowrap transition-all duration-300 ease-out max-w-0 opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2.5 group-hover:pr-1">
             <span>Shop All</span>
@@ -614,9 +647,9 @@ function ShopAllDropdownItem({
       </Link>
 
       {isOpen && (
-        <div className="fixed left-1/2 -translate-x-1/2 top-24 w-[98vw] max-w-[85rem] z-50 pt-2 animate-in fade-in-0 slide-in-from-top-2 duration-200 px-4">
-          <div className="relative overflow-hidden rounded-3xl  bg-white/45 backdrop-saturate-200 border border-slate-200/90 backdrop-blur-3xl text-slate-700 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
-            <div className="flex items-center justify-between px-8 py-4 border-b border-slate-200/80 bg-white/60 backdrop-blur-md">
+        <div className="fixed left-1/2 -translate-x-1/2 top-12 w-[98vw] max-w-[85rem] z-50 pt-2 animate-in fade-in-0 slide-in-from-top-2 duration-200 px-4">
+          <div className="relative overflow-hidden rounded-3xl bg-white/45 backdrop-saturate-200 border border-slate-200/90 backdrop-blur-3xl text-slate-700 shadow-[0_20px_60px_rgba(0,0,0,0.12)] max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 lg:px-8 py-4 border-b border-slate-200/80 bg-white/60 backdrop-blur-md shrink-0">
               <div className="flex items-center gap-2">
                 <span className="px-3.5 py-1 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-xs sm:text-sm font-black flex items-center gap-2 tracking-wider uppercase shadow-sm">
                   <Sparkles size={15} className="text-red-500" />
@@ -628,14 +661,14 @@ function ShopAllDropdownItem({
                 onClick={() => setIsOpen(false)}
                 className="text-xs sm:text-sm font-extrabold text-slate-600 hover:text-red-600 transition-colors flex items-center gap-1.5"
               >
-                Browse Complete Store Catalog <ArrowRight size={15} />
+                Browse Complete Catalog <ArrowRight size={15} />
               </Link>
             </div>
 
-            <div className="grid grid-cols-12 divide-x divide-slate-200/80 min-h-[500px]">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 lg:divide-x divide-y lg:divide-y-0 divide-slate-200/80 overflow-y-auto lg:overflow-hidden lg:min-h-[500px]">
               {/* Left Column: Products */}
-              <div className="col-span-4 p-6 bg-slate-50/60 backdrop-blur-xl flex flex-col">
-                <div className="flex items-center justify-between mb-4">
+              <div className="w-full lg:col-span-4 p-5 lg:p-6 bg-slate-50/60 backdrop-blur-xl flex flex-col order-2 lg:order-1">
+                <div className="flex items-center justify-between mb-4 shrink-0">
                   <span className="text-xs font-black tracking-widest text-slate-500 uppercase flex items-center gap-1.5">
                     <Tag size={14} className="text-red-500" />
                     Featured Products
@@ -651,7 +684,7 @@ function ShopAllDropdownItem({
               </div>
 
               {/* Middle Column: Category Links */}
-              <div className="col-span-3 p-5 bg-white/40 backdrop-blur-xl flex flex-col justify-between">
+              <div className="w-full lg:col-span-3 p-5 bg-white/40 backdrop-blur-xl flex flex-col justify-between order-1 lg:order-2">
                 <div>
                   <span className="text-xs font-black tracking-widest text-slate-500 uppercase block mb-3 px-2">
                     Categories
@@ -701,8 +734,8 @@ function ShopAllDropdownItem({
               </div>
 
               {/* Right Column: Subcategory Bento Cards */}
-              <div className="col-span-5 p-6 bg-white/40 backdrop-blur-xl">
-                <div className="flex items-center justify-between mb-4">
+              <div className="w-full lg:col-span-5 p-5 lg:p-6 bg-white/40 backdrop-blur-xl order-3 lg:order-3">
+                <div className="flex items-center justify-between mb-4 shrink-0">
                   <span className="text-xs font-black tracking-widest text-slate-500 uppercase flex items-center gap-1.5">
                     <Layers size={14} className="text-red-500" />
                     {hoveredCat?.name ? `${hoveredCat.name} Subcategories` : 'Subcategories'}
@@ -804,13 +837,13 @@ function CategoryDropdownItem({
 
     return (
       <div className="w-full font-sans">
-        <div className="flex items-center justify-between w-full px-5 py-2.5 rounded-3xl bg-white/70 border border-slate-200/80 backdrop-blur-md transition-colors hover:bg-white shadow-sm">
+        <div className="flex items-center justify-between w-full px-5 h-12 rounded-2xl bg-white/70 border border-slate-200/80 backdrop-blur-md transition-colors hover:bg-white shadow-sm">
           <div className="flex items-center gap-3.5 min-w-0">
-            <div className="relative w-9 h-9 shrink-0 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
+            <div className="relative w-8 h-8 shrink-0 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
               {categoryImageUrl ? (
                 <Image src={categoryImageUrl} alt={category.name} fill className="object-contain p-1" />
               ) : (
-                <Layers size={18} className="text-slate-400" />
+                <Layers size={16} className="text-slate-400" />
               )}
             </div>
             <Link
@@ -876,13 +909,13 @@ function CategoryDropdownItem({
         href={categoryHref}
         onClick={onClose}
         className={cn(
-          'group relative p-2.5 rounded-3xl text-sm sm:text-base font-extrabold transition-all duration-300 ease-out flex items-center cursor-pointer  ',
+          'group relative px-2.5 py-2 h-11 rounded-3xl text-sm sm:text-base font-extrabold transition-all duration-300 ease-out flex items-center cursor-pointer',
           isActive || isOpen
-            ? 'bg-white/80 text-slate-900  shadow-sm backdrop-blur-md'
-            : 'text-slate-600 '
+            ? 'bg-white/80 text-slate-900 shadow-sm backdrop-blur-md'
+            : 'text-slate-600 hover:bg-white/40'
         )}
       >
-        <div className="relative w-7 h-7 shrink-0 flex items-center justify-center overflow-hidden ">
+        <div className="relative w-7 h-7 shrink-0 flex items-center justify-center overflow-hidden">
           {categoryImageUrl ? (
             <Image src={categoryImageUrl} alt={category.name} fill sizes="28px" className="object-contain" />
           ) : (
@@ -896,16 +929,16 @@ function CategoryDropdownItem({
       </Link>
 
       {isOpen && (
-        <div className="fixed left-1/2 -translate-x-1/2 top-24 w-[98vw] max-w-[98rem] z-50 pt-3 animate-in fade-in-0 slide-in-from-top-2 duration-200 px-4">
-          <div className="relative rounded-3xl  bg-white/45 backdrop-saturate-200 backdrop-blur-3xl border border-slate-200/90 shadow-[0_20px_60px_rgba(0,0,0,0.12)] overflow-hidden text-slate-700">
+        <div className="fixed left-1/2 -translate-x-1/2 top-12 w-[93vw] max-w-[98rem] z-40 pt-3 animate-in fade-in-0 slide-in-from-top-2 duration-200 px-4">
+          <div className="relative rounded-3xl bg-white/45 backdrop-saturate-200 backdrop-blur-3xl border border-slate-200/90 shadow-[0_20px_60px_rgba(0,0,0,0.12)] overflow-hidden text-slate-700 max-h-[85vh] flex flex-col">
             {loading ? (
               <div className="flex items-center justify-center py-16 gap-3 text-slate-500 min-h-[380px]">
                 <Loader2 size={24} className="animate-spin text-red-500" />
                 <span className="text-sm font-semibold tracking-wide">Loading {category.name}...</span>
               </div>
             ) : (
-              <div>
-                <div className="flex items-center justify-between px-8 py-4 border-b border-slate-200/80 bg-white/60 backdrop-blur-md">
+              <div className="flex flex-col h-full overflow-hidden">
+                <div className="flex items-center justify-between px-6 lg:px-8 py-4 border-b border-slate-200/80 bg-white/60 backdrop-blur-md shrink-0">
                   <div className="flex items-center gap-2">
                     <span className="px-3.5 py-1 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-xs sm:text-sm font-black flex items-center gap-2 tracking-wider uppercase shadow-sm">
                       <Sparkles size={15} className="text-red-500" />
@@ -921,9 +954,9 @@ function CategoryDropdownItem({
                   </Link>
                 </div>
 
-                <div className="grid grid-cols-12 divide-x divide-slate-200/80 min-h-[480px]">
-                  <div className="col-span-5 p-6 bg-slate-50/60 backdrop-blur-xl flex flex-col">
-                    <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col lg:grid lg:grid-cols-12 lg:divide-x divide-y lg:divide-y-0 divide-slate-200/80 overflow-y-auto lg:overflow-hidden lg:min-h-[480px]">
+                  <div className="w-full lg:col-span-5 p-5 lg:p-6 bg-slate-50/60 backdrop-blur-xl flex flex-col order-2 lg:order-1">
+                    <div className="flex items-center justify-between mb-4 shrink-0">
                       <span className="text-xs font-black tracking-widest text-slate-500 uppercase flex items-center gap-1.5">
                         <Tag size={14} className="text-red-500" />
                         Top {category.name}
@@ -938,8 +971,8 @@ function CategoryDropdownItem({
                     </div>
                   </div>
 
-                  <div className="col-span-7 p-6 bg-white/40 backdrop-blur-xl">
-                    <div className="flex items-center justify-between mb-4">
+                  <div className="w-full lg:col-span-7 p-5 lg:p-6 bg-white/40 backdrop-blur-xl order-1 lg:order-2">
+                    <div className="flex items-center justify-between mb-4 shrink-0">
                       <span className="text-xs font-black tracking-widest text-slate-500 uppercase flex items-center gap-1.5">
                         <Layers size={14} className="text-red-500" />
                         Subcategories
