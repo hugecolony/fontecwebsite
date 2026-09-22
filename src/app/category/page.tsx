@@ -43,7 +43,7 @@ export default async function AllCategoriesPage() {
             return (
               <Link
                 key={cat.id}
-                href={`/categories/${cat.slug}`}
+                href={`/category/${cat.slug}`}
                 className="group block rounded-2xl p-4 bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300"
               >
                 <div className="aspect-square relative bg-slate-100 rounded-xl overflow-hidden mb-3">
