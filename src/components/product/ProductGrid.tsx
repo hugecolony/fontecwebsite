@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ProductCard } from './ProductCard';
 import { ProductCardSkeleton } from './ProductCardSkeleton';
 import type { WCProduct } from '@/types/product';
@@ -7,6 +8,9 @@ interface ProductGridProps {
   loading?: boolean;
   skeletonCount?: number;
 }
+
+// Wrap ProductCard in memo so individual cards don't re-render unless their props change
+const MemoizedProductCard = memo(ProductCard);
 
 export function ProductGrid({
   products,
@@ -38,7 +42,7 @@ export function ProductGrid({
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 pt-10 sm:pt-16 gap-x-3 sm:gap-x-6 gap-y-12 sm:gap-y-20 w-full">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <MemoizedProductCard key={product.id} product={product} />
       ))}
     </div>
   );

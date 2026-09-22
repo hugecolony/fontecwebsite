@@ -203,10 +203,7 @@ export function ProductDetailClient({ product, variations = [] }: ProductDetailC
                 fill
                 priority
                 className="object-contain"
-                // Serve full width on mobile, half width on tablet/desktop, capped at 600px
                 sizes="(max-width: 768px) 100vw, 50vw"  
-                // Prevents optimization issues on external WordPress URLs
-                unoptimized={typeof activeImageSrc === 'string' && activeImageSrc.startsWith('http')}
               />
             </div>
 
@@ -243,6 +240,7 @@ export function ProductDetailClient({ product, variations = [] }: ProductDetailC
                         fill
                         className="object-cover"
                         sizes="64px"
+                        loading="lazy"
                       />
                     </button>
                   );
@@ -341,6 +339,7 @@ export function ProductDetailClient({ product, variations = [] }: ProductDetailC
                                 fill
                                 className="object-cover"
                                 sizes="48px"
+                                loading="lazy"
                               />
                             </button>
                           );
@@ -353,7 +352,6 @@ export function ProductDetailClient({ product, variations = [] }: ProductDetailC
 
              {/* Action Buttons */}
               <div className="space-y-3 pt-2">
-                {/* Red Buy Now Button */}
                 <button
                   type="button"
                   onClick={handleBuyNow}
@@ -362,7 +360,6 @@ export function ProductDetailClient({ product, variations = [] }: ProductDetailC
                   <ShoppingBag size={20} /> Buy Now
                 </button>
 
-                {/* Add to Cart Glass Button */}
                 <button
                   type="button"
                   onClick={handleAddToCart}
@@ -383,7 +380,8 @@ export function ProductDetailClient({ product, variations = [] }: ProductDetailC
                   )}
                 </button>
               </div>
-              {/* Modern Thin-Black-Border Policy Container with Smooth Hover Effects */}
+
+              {/* Policy Container */}
               <div className="border border-black rounded-xl p-4 md:p-5 transition-all duration-300 hover:shadow-md bg-white">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {policies.map((item, index) => {
@@ -432,3 +430,4 @@ export function ProductDetailClient({ product, variations = [] }: ProductDetailC
     </section>
   );
 }
+export default ProductDetailClient;
