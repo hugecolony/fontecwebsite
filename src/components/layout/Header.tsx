@@ -49,7 +49,7 @@ export function Header() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
-  // Close mobile menu on route change
+  // Close mobile/tablet menu on route change
   useEffect(() => {
     setMenuOpen(false);
   }, []);
@@ -58,77 +58,96 @@ export function Header() {
     <>
       <header
         className={cn(
-          'fixed top-16 inset-x-4 max-w-7xl mx-auto z-50 transition-all duration-500 rounded-4xl',
+          'fixed top-12 sm:top-14 lg:top-16 inset-x-3 sm:inset-x-6 lg:inset-x-4 max-w-[340px] sm:max-w-2xl lg:max-w-[1680px] mx-auto z-40 transition-all duration-500 rounded-3xl sm:rounded-4xl',
           'backdrop-blur-xl border border-white/5 dark:border-white/5',
           'shadow-[0_8px_32px_0_rgba(0,0,0,0.08)]',
           scrolled
-            ? 'bg-white/5 dark:bg-slate-100/5 py-1'
+            ? 'bg-white/5 dark:bg-slate-100/5 py-0.5 sm:py-1'
             : 'bg-white/5 dark:bg-slate-100/5 py-0'
         )}
       >
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-18">
-            {/* Dynamic Logo */}
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 font-bold text-xl tracking-tight text-foreground hover:opacity-90 transition-opacity"
-            >
-              <div className="relative w-auto h-auto flex items-center justify-center">
+        <div className="px-3 sm:px-5 lg:px-8">
+          <div className="flex items-center justify-between h-12 lg:h-14">
+            
+            {/* 1. Left Section: Menu Toggle / Desktop Logo */}
+            <div className="flex items-center lg:w-1/3">
+              <button
+                type="button"
+                onClick={() => setMenuOpen((v) => !v)}
+                className="lg:hidden p-2 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              >
+                {menuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+
+              <Link
+                href="/"
+                className="hidden lg:flex items-center gap-2.5 font-bold text-xl tracking-tight text-foreground hover:opacity-90 transition-opacity"
+              >
+                <div className="relative w-auto h-auto flex items-center justify-center">
+                  {logoUrl ? (
+                    <Image
+                      src={DEFAULT_LOGO}
+                      alt="Fontec Logo"
+                      width={90}
+                      height={90}
+                      className="w-[90px] h-auto object-contain drop-shadow"
+                    />
+                  ) : (
+                    <Zap size={20} className="text-accent" />
+                  )}
+                </div>
+              </Link>
+            </div>
+
+            {/* 2. Center Section: Mobile/Tablet Logo / Desktop Nav Links */}
+            <div className="flex items-center justify-center lg:w-1/3">
+              <Link
+                href="/"
+                className="lg:hidden flex items-center justify-center hover:opacity-90 transition-opacity"
+              >
                 {logoUrl ? (
                   <Image
                     src={DEFAULT_LOGO}
                     alt="Fontec Logo"
-                    width={140}
-                    height={45}
-                    className="w-[140px] h-auto object-contain  drop-shadow"
+                    width={70}
+                    height={70}
+                    className="w-[70px] h-auto object-contain drop-shadow"
                   />
                 ) : (
-                  <Zap size={20} className="text-accent" />
+                  <Zap size={18} className="text-accent" />
                 )}
-              </div>
-            </Link>
+              </Link>
 
-            {/* Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-1">
-              <NavLinks />
-            </nav>
+              <nav className="hidden lg:flex items-center justify-center gap-1">
+                <NavLinks />
+              </nav>
+            </div>
 
-            {/* Right actions */}
-            <div className="flex items-center gap-1">
-              {/* Search toggle */}
+            {/* 3. Right Actions */}
+            <div className="flex items-center justify-end gap-1 lg:w-1/3">
               <button
                 type="button"
                 onClick={() => setSearchOpen((v) => !v)}
-                className="p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                className="p-2 sm:p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                 aria-label="Search"
               >
                 <Search size={20} />
               </button>
 
-              {/* Cart */}
               <button
                 type="button"
                 onClick={openCart}
-                className="relative p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                className="relative p-2 sm:p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                 aria-label="Open cart"
               >
                 <ShoppingBag size={20} />
                 <CartCount />
               </button>
-
-              {/* Mobile menu toggle */}
-              <button
-                type="button"
-                onClick={() => setMenuOpen((v) => !v)}
-                className="lg:hidden p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              >
-                {menuOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
             </div>
+
           </div>
 
-          {/* Search bar */}
           {searchOpen && (
             <div className="pb-4 animate-fade-in border-t border-black/5 dark:border-white/10 pt-3">
               <SearchBar onClose={() => setSearchOpen(false)} />
@@ -136,7 +155,7 @@ export function Header() {
           )}
         </div>
 
-        {/* Mobile nav dropdown */}
+        {/* Mobile & Tablet nav dropdown */}
         {menuOpen && (
           <div className="lg:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-black/5 dark:border-white/10 rounded-b-3xl animate-fade-in">
             <nav className="flex flex-col px-4 py-4 gap-1">
@@ -146,8 +165,7 @@ export function Header() {
         )}
       </header>
 
-      {/* Header spacer to prevent page content overlap */}
-      <div className="h-24 lg:h-28" />
+      <div className="h-20 sm:h-24 lg:h-28" />
     </>
   );
 }

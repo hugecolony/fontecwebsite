@@ -587,25 +587,25 @@ function ShopAllDropdownItem({
   return (
     <div className="relative font-sans" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <Link
-        href="/shop"
-        onClick={onClose}
-        className={cn(
-          'group relative p-3 rounded-3xl text-sm sm:text-base font-extrabold tracking-wide transition-all duration-300 ease-out whitespace-nowrap flex items-center cursor-pointer border',
-          isActive || isOpen
-            ? 'bg-red-50 text-red-600 border-red-200 shadow-md shadow-red-950/5 backdrop-blur-md'
-            : 'bg-white/70 hover:bg-white text-slate-700 border-slate-200 hover:border-slate-300 shadow-sm backdrop-blur-md'
-        )}
-      >
-        <Store size={18} className="shrink-0 text-slate-600" />
+          href="/shop"
+          onClick={onClose}
+          className={cn(
+            'group relative p-3 rounded-3xl text-sm sm:text-base font-extrabold tracking-wide transition-all duration-300 ease-out whitespace-nowrap flex items-center cursor-pointer bg-transparent',
+            isActive || isOpen
+              ? 'text-red-600 border-red-200'
+              : 'text-slate-700 border-transparent hover:border-slate-300'
+          )}
+        >
+          <Store size={18} className="shrink-0 text-slate-600" />
 
-        <div className="flex items-center overflow-hidden whitespace-nowrap transition-all duration-300 ease-out max-w-0 opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2.5 group-hover:pr-1">
-          <span>Shop All</span>
-        </div>
+          <div className="flex items-center overflow-hidden whitespace-nowrap transition-all duration-300 ease-out max-w-0 opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-2.5 group-hover:pr-1">
+            <span>Shop All</span>
+          </div>
       </Link>
 
       {isOpen && (
         <div className="fixed left-1/2 -translate-x-1/2 top-24 w-[98vw] max-w-[85rem] z-50 pt-2 animate-in fade-in-0 slide-in-from-top-2 duration-200 px-4">
-          <div className="relative overflow-hidden rounded-3xl bg-white/85 backdrop-saturate-200 border border-slate-200/90 backdrop-blur-3xl text-slate-700 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+          <div className="relative overflow-hidden rounded-3xl  bg-white/45 backdrop-saturate-200 border border-slate-200/90 backdrop-blur-3xl text-slate-700 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
             <div className="flex items-center justify-between px-8 py-4 border-b border-slate-200/80 bg-white/60 backdrop-blur-md">
               <div className="flex items-center gap-2">
                 <span className="px-3.5 py-1 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-xs sm:text-sm font-black flex items-center gap-2 tracking-wider uppercase shadow-sm">
@@ -794,7 +794,7 @@ function CategoryDropdownItem({
 
     return (
       <div className="w-full font-sans">
-        <div className="flex items-center justify-between w-full px-5 py-3.5 rounded-2xl bg-white/70 border border-slate-200/80 backdrop-blur-md transition-colors hover:bg-white shadow-sm">
+        <div className="flex items-center justify-between w-full px-5 py-2.5 rounded-3xl bg-white/70 border border-slate-200/80 backdrop-blur-md transition-colors hover:bg-white shadow-sm">
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="relative w-9 h-9 shrink-0 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
               {categoryImageUrl ? (
@@ -866,13 +866,13 @@ function CategoryDropdownItem({
         href={categoryHref}
         onClick={onClose}
         className={cn(
-          'group relative p-2.5 rounded-3xl text-sm sm:text-base font-extrabold transition-all duration-300 ease-out flex items-center cursor-pointer border whitespace-nowrap',
+          'group relative p-2.5 rounded-3xl text-sm sm:text-base font-extrabold transition-all duration-300 ease-out flex items-center cursor-pointer  ',
           isActive || isOpen
-            ? 'bg-white text-slate-900 border-slate-300 shadow-sm backdrop-blur-md'
-            : 'text-slate-700 bg-white/70 border-slate-200 hover:text-slate-900 hover:bg-white backdrop-blur-md shadow-sm'
+            ? 'bg-white/80 text-slate-900  shadow-sm backdrop-blur-md'
+            : 'text-slate-600 '
         )}
       >
-        <div className="relative w-7 h-7 shrink-0 flex items-center justify-center overflow-hidden rounded-full">
+        <div className="relative w-7 h-7 shrink-0 flex items-center justify-center overflow-hidden ">
           {categoryImageUrl ? (
             <Image src={categoryImageUrl} alt={category.name} fill sizes="28px" className="object-contain" />
           ) : (
@@ -887,7 +887,7 @@ function CategoryDropdownItem({
 
       {isOpen && (
         <div className="fixed left-1/2 -translate-x-1/2 top-24 w-[98vw] max-w-[98rem] z-50 pt-3 animate-in fade-in-0 slide-in-from-top-2 duration-200 px-4">
-          <div className="relative rounded-3xl bg-white/85 backdrop-saturate-200 backdrop-blur-3xl border border-slate-200/90 shadow-[0_20px_60px_rgba(0,0,0,0.12)] overflow-hidden text-slate-700">
+          <div className="relative rounded-3xl  bg-white/45 backdrop-saturate-200 backdrop-blur-3xl border border-slate-200/90 shadow-[0_20px_60px_rgba(0,0,0,0.12)] overflow-hidden text-slate-700">
             {loading ? (
               <div className="flex items-center justify-center py-16 gap-3 text-slate-500 min-h-[380px]">
                 <Loader2 size={24} className="animate-spin text-red-500" />

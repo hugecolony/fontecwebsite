@@ -89,24 +89,10 @@ const HERO_SLIDES: SlideContent[] = [
     mobileHeight: 1350,
     alt: 'fontec Slide 7',
   },
-  // {
-  //   id: 8,
-  //   desktopImageUrl: `${WP_BASE_URL}/wp-content/uploads/2026/07/Fontec-Typo-1-8.png`,
-  //   desktopWidth: 1953,
-  //   desktopHeight: 805,
-  //   // No dedicated mobile crop yet -> falls back to the desktop (landscape)
-  //   // image. Its mobileWidth/mobileHeight are set to match, so the aspect
-  //   // box below sizes itself correctly for THIS slide instead of forcing
-  //   // the 4/5 portrait box (which would crop it badly) onto a landscape image.
-  //   mobileImageUrl: `${WP_BASE_URL}/wp-content/uploads/2026/07/Fontec-Typo-1-8.png`,
-  //   mobileWidth: 1953,
-  //   mobileHeight: 805,
-  //   alt: 'fontec Slide 8',
-  // },
 ];
 
 export function HeroSection() {
-  const [slides, setSlides] = useState<SlideContent[]>(HERO_SLIDES);
+  const [slides] = useState<SlideContent[]>(HERO_SLIDES);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -176,20 +162,9 @@ export function HeroSection() {
   const active = slides[currentSlide];
 
   return (
-    <div className="w-full max-w-full mx-auto px-4 sm:px-6 lg:px-8 my-4 sm:my-6">
-      {/*
-        MOBILE box (visible below `md`, i.e. < 768px): aspect ratio is set
-        PER-SLIDE from that slide's actual mobileWidth/mobileHeight. This
-        matters for slide 8, which has no dedicated portrait crop yet and
-        falls back to a landscape image — its box now sizes correctly
-        instead of squeezing a landscape image into a fixed 4/5 box.
-
-        IMPORTANT: this uses the SAME breakpoint (`md`) as the desktop
-        box below. Previously the aspect ratio switched at `sm` (640px)
-        while the image swapped at `md` (768px), so between 640–767px you
-        got the desktop aspect box paired with the mobile image — that
-        mismatch was the root cause of the bad cropping.
-      */}
+    /* Increased negative top margin for mobile (-mt-6 / -mt-8) so it pulls higher up */
+    <div className="w-full max-w-full mx-auto px-4 sm:px-6 lg:px-8 -mt-20 sm:-mt-24 lg:-mt-24 mb-4 sm:mb-6">
+      {/* MOBILE Box */}
       <section
         className="md:hidden relative block w-full overflow-hidden rounded-[28px] shadow-2xl focus:outline-none bg-neutral-950 select-none"
         style={{
@@ -223,11 +198,7 @@ export function HeroSection() {
         <Controls />
       </section>
 
-      {/*
-        DESKTOP / TABLET box (visible from `md` up, i.e. >= 768px): aspect
-        ratio set PER-SLIDE from desktopWidth/desktopHeight. Same
-        breakpoint as the mobile box above, on purpose.
-      */}
+      {/* DESKTOP / TABLET Box */}
       <section
         className="hidden md:block relative w-full overflow-hidden rounded-[36px] shadow-2xl group focus:outline-none transition-transform duration-300 hover:scale-[1.01] bg-neutral-950 select-none"
         style={{

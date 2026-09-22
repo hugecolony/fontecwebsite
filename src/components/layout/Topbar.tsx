@@ -29,7 +29,7 @@ export function Topbar() {
   return (
     <>
       {/* Light Glassmorphism Container */}
-      <div className="w-full bg-white/70 backdrop-blur-md border-b border-slate-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative z-40">
+      <div className="w-full bg-white/5 relative z-40 backdrop-blur-md border-b border-white/10 dark:border-white/5 relative z-40 transition-colors duration-300 ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-9 gap-4">
             
@@ -44,7 +44,7 @@ export function Topbar() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.name}
-                    className="text-slate-500 hover:text-indigo-600 hover:scale-110 transition-all duration-150 flex items-center justify-center p-0.5"
+                    className="text-slate-500 hover:text-red-600 hover:scale-110 transition-all duration-150 flex items-center justify-center p-0.5"
                   >
                     <Icon className="w-3.5 h-3.5" />
                   </a>
@@ -83,7 +83,7 @@ export function Topbar() {
                 <Link
                   key={item.id}
                   href={item.href}
-                  className="text-[12px] font-medium text-slate-600 hover:text-indigo-600 transition-colors duration-150 whitespace-nowrap"
+                  className="text-[12px] font-medium text-slate-600 hover:text-red-600 transition-colors duration-150 whitespace-nowrap"
                 >
                   {item.label}
                 </Link>

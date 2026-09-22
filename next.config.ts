@@ -1,19 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'www.fontecmobiles.com',
-      },
-      {
-        protocol: 'https',
         hostname: 'fontecmobiles.com',
+        pathname: '/wp-content/uploads/**',
       },
-      // keep this too if fontec.local is still used anywhere (e.g. staging)
       {
         protocol: 'https',
-        hostname: 'fontec.local',
+        hostname: 'www.fontecmobiles.com',
+        pathname: '/wp-content/uploads/**',
       },
     ],
   },
