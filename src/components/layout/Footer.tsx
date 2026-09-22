@@ -39,37 +39,9 @@ const fallbackCompanyLinks = [
 ];
 
 export function Footer() {
-  // Initialize state immediately from localStorage if available to avoid layout shifts
-  const [shopLinks, setShopLinks] = useState<{ href: string; label: string }[]>(() => {
-    if (typeof window !== 'undefined') {
-      const cached = localStorage.getItem(SHOP_CACHE_KEY);
-      if (cached) {
-        try {
-          const { items, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < CACHE_TTL) return items;
-        } catch (e) {
-          // ignore
-        }
-      }
-    }
-    return [];
-  });
-
-  const [companyLinks, setCompanyLinks] = useState<{ href: string; label: string }[]>(() => {
-    if (typeof window !== 'undefined') {
-      const cached = localStorage.getItem(PAGES_CACHE_KEY);
-      if (cached) {
-        try {
-          const { items, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < CACHE_TTL) return items;
-        } catch (e) {
-          // ignore
-        }
-      }
-    }
-    return fallbackCompanyLinks;
-  });
-
+  // Initialize with empty/fallback states to ensure server and client initial render match
+  const [shopLinks, setShopLinks] = useState<{ href: string; label: string }[]>([]);
+  const [companyLinks, setCompanyLinks] = useState<{ href: string; label: string }[]>(fallbackCompanyLinks);
   const [email, setEmail] = useState('');
 
   // Care / Support navigation links (static, always instant)
@@ -82,6 +54,29 @@ export function Footer() {
     { href: '/shipping', label: 'Shipping Policy' },
     { href: '/express-delivery', label: 'Express Delivery' },
   ];
+
+  // Hydrate from localStorage safely on mount to prevent SSR hydration mismatch
+  useEffect(() => {
+    try {
+      const cachedShop = localStorage.getItem(SHOP_CACHE_KEY);
+      if (cachedShop) {
+        const { items, timestamp } = JSON.parse(cachedShop);
+        if (Date.now() - timestamp < CACHE_TTL && Array.isArray(items)) {
+          setShopLinks(items);
+        }
+      }
+
+      const cachedPages = localStorage.getItem(PAGES_CACHE_KEY);
+      if (cachedPages) {
+        const { items, timestamp } = JSON.parse(cachedPages);
+        if (Date.now() - timestamp < CACHE_TTL && Array.isArray(items)) {
+          setCompanyLinks(items);
+        }
+      }
+    } catch (e) {
+      // ignore parsing errors
+    }
+  }, []);
 
   useEffect(() => {
     let isMounted = true;

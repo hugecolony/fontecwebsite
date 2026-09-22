@@ -21,11 +21,30 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  // Hide on scroll down, show on scroll up states
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Track if background styling should change
+      setScrolled(currentScrollY > 20);
+
+      // Hide navbar when scrolling down past 80px, show when scrolling up
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   // Close mobile/tablet menu on route changes
   useEffect(() => {
@@ -36,12 +55,13 @@ export function Header() {
     <>
       <header
         className={cn(
-          'fixed top-12 sm:top-14 lg:top-16 inset-x-3 sm:inset-x-6 lg:inset-x-4 max-w-[340px] sm:max-w-2xl lg:max-w-[1680px] mx-auto z-40 transition-all duration-500 rounded-3xl sm:rounded-4xl',
+          'fixed top-12 sm:top-14 lg:top-16 inset-x-3 sm:inset-x-6 lg:inset-x-4 max-w-[340px] sm:max-w-2xl lg:max-w-[1680px] mx-auto z-40 transition-all duration-300 ease-in-out rounded-3xl sm:rounded-4xl',
           'backdrop-blur-xl border border-white/5 dark:border-white/5',
           'shadow-[0_8px_32px_0_rgba(0,0,0,0.08)]',
           scrolled
             ? 'bg-white/5 dark:bg-slate-100/5 py-0.5 sm:py-1'
-            : 'bg-white/5 dark:bg-slate-100/5 py-0'
+            : 'bg-white/5 dark:bg-slate-100/5 py-0',
+          showNavbar ? 'translate-y-0' : '-translate-y-28 opacity-0 pointer-events-none'
         )}
       >
         <div className="px-3 sm:px-5 lg:px-8">

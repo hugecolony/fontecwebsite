@@ -1,4 +1,4 @@
-'use client';
+'use type';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -312,6 +312,16 @@ export function NavLinks({ mobile, onClose }: NavLinksProps) {
 
   const [categories, setCategories] = useState<WPCategory[]>([]);
   const [loadingCats, setLoadingCats] = useState(true);
+
+  // Prevent background website scrolling when mobile drawer is open
+  useEffect(() => {
+    if (mobile) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [mobile]);
 
   useEffect(() => {
     async function fetchCategories() {
