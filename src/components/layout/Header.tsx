@@ -55,7 +55,8 @@ export function Header() {
     <>
       <header
         className={cn(
-          'fixed top-12 sm:top-14 lg:top-16 inset-x-3 sm:inset-x-6 lg:inset-x-4 max-w-[340px] sm:max-w-2xl lg:max-w-[1680px] mx-auto z-40 transition-all duration-300 ease-in-out rounded-3xl sm:rounded-4xl',
+          'fixed top-12 sm:top-14 lg:top-16 inset-x-3 sm:inset-x-6 lg:inset-x-4 w-[85%] max-w-[320px] sm:max-w-md lg:max-w-[1680px] mx-auto z-40 transition-all duration-300 ease-in-out rounded-3xl sm:rounded-4xl',
+          
           'backdrop-blur-xl border border-white/5 dark:border-white/5',
           'shadow-[0_8px_32px_0_rgba(0,0,0,0.08)]',
           scrolled
