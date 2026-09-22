@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
@@ -63,82 +63,126 @@ interface FeaturedProductsProps {
 
 export function FeaturedProducts({ products }: FeaturedProductsProps) {
   const displayProducts = products.length > 0 ? products : MOCK_PRODUCTS;
+  const duplicatedProducts = [...displayProducts, ...displayProducts]; // Double array for smooth infinite loop
+  
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-scrolling ticker effect matching the categories section
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || displayProducts.length === 0) return;
+
+    let animationFrameId: number;
+
+    const scrollStep = () => {
+      if (!isPaused && container) {
+        container.scrollLeft += 0.8; // Adjust scrolling speed here
+
+        // Seamlessly loop back to start when halfway through duplicated items
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0;
+        }
+      }
+      animationFrameId = requestAnimationFrame(scrollStep);
+    };
+
+    const timer = setTimeout(() => {
+      animationFrameId = requestAnimationFrame(scrollStep);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [displayProducts, isPaused]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const { clientWidth } = scrollContainerRef.current;
-      // Scrolls by container width on click of arrows
       scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -clientWidth : clientWidth,
+        left: direction === 'left' ? -clientWidth * 0.75 : clientWidth * 0.75,
         behavior: 'smooth',
       });
     }
   };
 
   return (
-    <section className="py-12 w-full px-4 sm:px-6 lg:px-12 overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-200">
-        <div className="flex items-center gap-2.5">
-          <span className="h-6 w-1.5 bg-gradient-to-b from- red-600 via- red-600 to- red-600 rounded-full" />
-          <h2 id="category-heading" className="text-2xl md:text-4xl font-extrabold text-slate-600 tracking-tight">
-            Featured Products <span className="bg-gradient-to-r from- red-600 via- red-600 to- red-600 bg-clip-text text-transparent"></span>
-          </h2>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* Desktop Arrow Controls */}
-          <div className="hidden sm:flex items-center gap-1.5">
-            <button
-              onClick={() => scroll('left')}
-              aria-label="Scroll left"
-              className="p-2 rounded-full border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
+    <section className="py-16 w-full px-4 sm:px-6 lg:px-8 overflow-hidden bg-white">
+      <div className="max-w-screen mx-auto">
+        {/* Header */}
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-5 h-0.5 bg-red-600 block rounded-full"></span>
+              <span className="text-xs font-bold tracking-widest text-slate-500 uppercase">
+                Top Quality Collection
+              </span>
+            </div>
+            <h2
+              id="featured-heading"
+              className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight"
             >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              aria-label="Scroll right"
-              className="p-2 rounded-full border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
-            >
-              <ChevronRight size={18} />
-            </button>
+              Featured Products
+            </h2>
           </div>
 
+          <div className="flex items-center gap-3">
+            {/* Desktop Navigation Arrows */}
+            <div className="hidden sm:flex items-center gap-2">
+              <button
+                onClick={() => scroll('left')}
+                aria-label="Scroll left"
+                className="w-10 h-10 rounded-2xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 flex items-center justify-center transition-all duration-300 shadow-sm cursor-pointer"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                aria-label="Scroll right"
+                className="w-10 h-10 rounded-2xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-700 flex items-center justify-center transition-all duration-300 shadow-sm cursor-pointer"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+
+            <Link
+              href="/shop"
+              className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-900 text-white text-xs font-bold tracking-wide uppercase hover:bg-red-600 transition-colors duration-300 shadow-sm"
+            >
+              View All <ArrowRight size={15} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Auto-Scrolling Motion Container */}
+        <div
+          ref={scrollContainerRef}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          className="flex gap-6 overflow-x-hidden pb-6 pt-2 select-none"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {duplicatedProducts.map((product, index) => (
+            <div
+              key={`${product.id}-${index}`}
+              className="w-[280px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-72px)/4)] shrink-0 snap-start"
+            >
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile View All Link */}
+        <div className="sm:hidden mt-6 text-center">
           <Link
             href="/shop"
-            className="hidden sm:flex items-center gap-1.5 text-sm text-slate-600 hover:text- red-600 transition-colors font-medium"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 text-white text-xs font-bold tracking-wide uppercase hover:bg-red-600 transition-colors duration-300 shadow-sm"
           >
-            View All <ArrowRight size={16} />
+            View All Products
+            <ArrowRight size={16} />
           </Link>
         </div>
-      </div>
-
-      {/* Horizontal Scrollable Slider Container */}
-      <div
-        ref={scrollContainerRef}
-        className="flex gap-4 lg:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-4"
-      >
-        {displayProducts.map((product) => (
-          <div
-            key={product.id}
-            className="w-full sm:w-[calc(50%-8px)] lg:w-[calc(25%-18px)] xl:w-[calc(20%-20px)] shrink-0 snap-start"
-          >
-            <ProductCard product={product} />
-          </div>
-        ))}
-      </div>
-
-      {/* Mobile view all link */}
-      <div className="sm:hidden mt-6 text-center">
-        <Link 
-          href="/shop" 
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text- red-600 hover:text- red-700"
-        >
-          View All Products
-          <ArrowRight size={16} />
-        </Link>
       </div>
     </section>
   );

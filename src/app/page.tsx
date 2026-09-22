@@ -40,15 +40,15 @@ export default async function HomePage() {
       <Suspense fallback={null}>
         <HeroSection/>
         <CategoriesSection categories={categories} />
-        <ScrollingPromotion />
-      </Suspense>
+   
+     
       
       <FeatureBanner />
+      <VideoSlider />
       
-      <Suspense fallback={null}>
         <FeatureHighlight />
         <FeaturedProducts products={products} />
-        <VideoSlider />
+        
         <ImageSlider />
       </Suspense>
     </>

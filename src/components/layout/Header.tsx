@@ -26,7 +26,6 @@ export function Header() {
   useEffect(() => {
     async function fetchWPLogo() {
       try {
-        // Queries media by slug 'fontec-logo1' via WP REST API
         const res = await fetch(`${WP_BASE_URL}/wp-json/wp/v2/media?slug=fontec-logo1`);
         if (res.ok) {
           const data = await res.json();
@@ -59,27 +58,29 @@ export function Header() {
     <>
       <header
         className={cn(
-          'fixed top-10 inset-x-0 z-50 transition-all duration-300',
-          scrolled ? 'glass-light ' : 'bg-transparent'
+          'fixed top-16 inset-x-4 max-w-7xl mx-auto z-50 transition-all duration-500 rounded-4xl',
+          'backdrop-blur-xl border border-white/5 dark:border-white/5',
+          'shadow-[0_8px_32px_0_rgba(0,0,0,0.08)]',
+          scrolled
+            ? 'bg-white/5 dark:bg-slate-100/5 py-1'
+            : 'bg-white/5 dark:bg-slate-100/5 py-0'
         )}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-18">
             {/* Dynamic Logo */}
-           <Link
+            <Link
               href="/"
               className="flex items-center gap-2.5 font-bold text-xl tracking-tight text-foreground hover:opacity-90 transition-opacity"
             >
-              {/* Adjust w-32 (width) and h-9 (height) as needed */}
               <div className="relative w-auto h-auto flex items-center justify-center">
                 {logoUrl ? (
                   <Image
-                    src={logoUrl}
+                    src={DEFAULT_LOGO}
                     alt="Fontec Logo"
-                    width={90}
-                    height={90}
-                    className="w-auto h-auto" // or style={{ height: 'auto', width: 'auto' }}
-                    priority
+                    width={140}
+                    height={45}
+                    className="w-[140px] h-auto object-contain  drop-shadow"
                   />
                 ) : (
                   <Zap size={20} className="text-accent" />
@@ -98,7 +99,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setSearchOpen((v) => !v)}
-                className="p-2.5 rounded-lg text-muted hover:text-foreground hover:bg-white/5 transition-colors"
+                className="p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                 aria-label="Search"
               >
                 <Search size={20} />
@@ -108,7 +109,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={openCart}
-                className="relative p-2.5 rounded-lg text-muted hover:text-foreground hover:bg-white/5 transition-colors"
+                className="relative p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                 aria-label="Open cart"
               >
                 <ShoppingBag size={20} />
@@ -119,7 +120,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setMenuOpen((v) => !v)}
-                className="lg:hidden p-2.5 rounded-lg text-muted hover:text-foreground hover:bg-white/5 transition-colors"
+                className="lg:hidden p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                 aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               >
                 {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -129,15 +130,15 @@ export function Header() {
 
           {/* Search bar */}
           {searchOpen && (
-            <div className="pb-4 animate-fade-in">
+            <div className="pb-4 animate-fade-in border-t border-black/5 dark:border-white/10 pt-3">
               <SearchBar onClose={() => setSearchOpen(false)} />
             </div>
           )}
         </div>
 
-        {/* Mobile nav */}
+        {/* Mobile nav dropdown */}
         {menuOpen && (
-          <div className="lg:hidden glass-dark border-t border-white/5 animate-fade-in">
+          <div className="lg:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-black/5 dark:border-white/10 rounded-b-3xl animate-fade-in">
             <nav className="flex flex-col px-4 py-4 gap-1">
               <NavLinks mobile onClose={() => setMenuOpen(false)} />
             </nav>
@@ -145,8 +146,8 @@ export function Header() {
         )}
       </header>
 
-      {/* Header spacer */}
-      <div className="h-16 lg:h-18" />
+      {/* Header spacer to prevent page content overlap */}
+      <div className="h-24 lg:h-28" />
     </>
   );
 }

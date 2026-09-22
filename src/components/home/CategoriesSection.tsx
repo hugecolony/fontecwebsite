@@ -3,8 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const WP_BASE_URL = 'https://fontecmobiles.com';
 
@@ -13,13 +12,13 @@ export interface DynamicCategory {
   name: string;
   slug: string;
   imageUrl: string | null;
+  count?: number;
 }
 
 interface CategoriesSectionProps {
   categories?: any[];
 }
 
-// Helper function to normalize category objects from server or WP REST API
 function formatCategories(wcCats: any[]): DynamicCategory[] {
   if (!Array.isArray(wcCats)) return [];
 
@@ -52,6 +51,7 @@ function formatCategories(wcCats: any[]): DynamicCategory[] {
       name: wcMatch.name,
       slug: wcMatch.slug,
       imageUrl,
+      count: wcMatch?.count ?? 0,
     };
   });
 }
@@ -78,7 +78,7 @@ export function CategoriesSection({ categories: initialCategories }: CategoriesS
     async function fetchDynamicCategories() {
       try {
         const res = await fetch(
-          `${WP_BASE_URL}/wp-json/wc/store/v1/products/categories?parent=0&per_page=24`
+          `${WP_BASE_URL}/wp-json/wc/store/v1/products/categories?parent=0&per_page=12`
         );
 
         if (!res.ok) {
@@ -97,132 +97,170 @@ export function CategoriesSection({ categories: initialCategories }: CategoriesS
     fetchDynamicCategories();
   }, [initialCategories]);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, clientWidth } = scrollContainerRef.current;
-      const scrollAmount = clientWidth * 0.75;
-      scrollContainerRef.current.scrollTo({
-        left: direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
-        behavior: 'smooth',
-      });
-    }
-  };
+  // Robust Smooth Auto-Scroll Ticker Logic
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || categories.length === 0) return;
+
+    let animationFrameId: number;
+    let isPaused = false;
+
+    const scrollStep = () => {
+      if (!isPaused && container) {
+        container.scrollLeft += 0.8; // Adjust scrolling speed here
+
+        // Seamless loop back to start
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0;
+        }
+      }
+      animationFrameId = requestAnimationFrame(scrollStep);
+    };
+
+    const timer = setTimeout(() => {
+      animationFrameId = requestAnimationFrame(scrollStep);
+    }, 1000);
+
+    const handleMouseEnter = () => {
+      isPaused = true;
+    };
+
+    const handleMouseLeave = () => {
+      isPaused = false;
+    };
+
+    container.addEventListener('mouseenter', handleMouseEnter);
+    container.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(animationFrameId);
+      if (container) {
+        container.removeEventListener('mouseenter', handleMouseEnter);
+        container.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
+  }, [categories]);
+
+  // Duplicate categories array once to create a seamless infinite scrolling illusion
+  const duplicatedCategories = [...categories, ...categories];
 
   return (
-    <section className="mt-12 px-4 md:px-8" aria-labelledby="category-heading">
-      <div className="max-w-screen mx-auto">
-        {/* Centered Header Section matching screenshot */}
-        <div className="mb-10 text-center relative">
+    <section className="mt-16 px-4 md:px-8 overflow-hidden" aria-labelledby="category-heading">
+      <div className="max-w-screen-h  mx-auto">
+        {/* Section Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-5 h-0.5 bg-red-600 block rounded-full"></span>
+            <span className="text-xs font-bold tracking-widest text-slate-500 uppercase">
+              Browse by Category
+            </span>
+          </div>
           <h2
             id="category-heading"
-            className="text-2xl sm:text-3xl font-black text-slate-900 tracking-wider uppercase inline-flex items-center gap-2"
+            className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight"
           >
-            EXPLORE BY <span className="text-red-500">CATEGORIES</span>
+            Explore Now
           </h2>
-
-          {/* Navigation Controls positioned on the sides or top-right */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden md:flex items-center gap-2">
-            {/* View All Categories Button */}
-            <Link
-              href="/categories"
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/40 dark:bg-red-800/400 backdrop-blur-xl border border-white/60 dark:border-white/10 text-xs font-bold uppercase tracking-wider text-slate-800 hover:bg-red-600 hover:text-white hover:border-transparent transition-all duration-300 shadow-sm"
-            >
-              <span>View All</span>
-              <ArrowRight size={14} />
-            </Link>
-            <button
-              onClick={() => scroll('left')}
-              className="p-2.5 rounded-full border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 transition-colors shadow-xs focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              className="p-2.5 rounded-full border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 transition-colors shadow-xs focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer"
-              aria-label="Scroll right"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
         </div>
 
         {loading ? (
-          <div
-            ref={scrollContainerRef}
-            className="flex gap-6 overflow-x-auto scrollbar-none scroll-smooth pb-6 pt-2 snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
-          >
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="w-[180px] sm:w-[220px] shrink-0 text-center snap-start">
-                <div className="w-[180px] sm:w-[220px] aspect-square rounded-full bg-slate-100 animate-pulse mx-auto border border-red-200" />
-                <div className="h-5 w-3/4 bg-slate-200 rounded mx-auto mt-4 animate-pulse" />
-              </div>
+          <div className="flex gap-6 overflow-x-hidden pb-4">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="w-[300px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-72px)/4)] h-56 rounded-3xl bg-slate-100 animate-pulse border border-slate-200/60 shrink-0"
+              />
             ))}
           </div>
         ) : categories.length > 0 ? (
           <div
             ref={scrollContainerRef}
-            className="flex gap-6 sm:gap-8 overflow-x-auto scrollbar-none scroll-smooth pb-6 pt-2 px-2 snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+            className="flex gap-6 overflow-x-hidden pb-6 pt-2 select-none"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {categories.map((cat) => (
-              <motion.div
-                key={cat.id}
-                whileHover={{ y: -6 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                className="w-[180px] sm:w-[220px] shrink-0 text-center snap-start"
+            {duplicatedCategories.map((cat, index) => (
+              <div
+                key={`${cat.id}-${index}`}
+                className="w-[300px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-72px)/4)] snap-start shrink-0"
               >
-                {/* Uppercase Category Label */}
                 <Link
                   href={`/shop?category=${cat.slug}`}
-                  className="block group focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded-full"
+                  className="group relative flex items-center justify-between p-7 bg-gradient-to-br from-white via-white to-slate-50/80 rounded-3xl border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(220,38,38,0.08)] hover:border-red-500/30 transition-all duration-500 h-56 block transform hover:-translate-y-1.5"
                 >
-                  {/* Larger Circular Image Container with red Ring & Soft Shadow */}
-                  <div className="w-[180px] sm:w-[220px] aspect-square rounded-full overflow-hidden mx-auto relative bg-transparent border-2 border-red-600 shadow-[0_4px_20px_rgba(239,68,68,0.15)] group-hover:border-red-500 group-hover:shadow-[0_6px_25px_rgba(239,68,68,0.3)] transition-all duration-300 p-5 flex items-center justify-center">
+                  {/* Product Count Badge Top Right */}
+                  {cat.count !== undefined && cat.count > 0 && (
+                    <span className="absolute top-4 right-5 px-2.5 py-1 text-[11px] bg-slate-100/80 backdrop-blur-md text-slate-600 font-semibold rounded-full border border-slate-200/60">
+                      {cat.count} Items
+                    </span>
+                  )}
+
+                  {/* Left Side: Modern Larger Image Showcase */}
+                  <div className="relative w-32 h-32 shrink-0 flex items-center justify-center p-2">
                     {cat.imageUrl ? (
                       <Image
                         src={cat.imageUrl}
                         alt={cat.name}
                         fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        priority
-                        className="object-contain"
+                        sizes="128px"
+                        className="object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-md"
                         unoptimized
                       />
                     ) : (
-                      <div className="h-full w-full flex items-center justify-center text-slate-400 font-medium text-xs text-center">
-                        No Image
-                      </div>
+                      <div className="text-xs text-slate-400 font-medium">No Image</div>
                     )}
                   </div>
 
-                  {/* Uppercase Category Label */}
-                  <div className="mt-4">
-                    <h3 className="text-slate-800 text-base sm:text-lg font-black uppercase tracking-wider group-hover:text-red-600 transition-colors truncate px-1">
-                      {cat.name}
-                    </h3>
+                  {/* Right Side: Title & Action Arrow */}
+                  <div className="flex flex-col justify-between h-full pl-3 flex-1">
+                    <div className="mt-8">
+                      <span className="text-[11px] uppercase tracking-wider text-red-600 font-bold block mb-1">
+                        Explore
+                      </span>
+                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-red-600 transition-colors line-clamp-2 leading-snug">
+                        {cat.name}
+                      </h3>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <div className="w-10 h-10 rounded-2xl bg-slate-100 group-hover:bg-red-600 group-hover:text-white text-slate-700 flex items-center justify-center transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:rotate-[-10deg]">
+                        <ArrowRight size={18} />
+                      </div>
+                    </div>
                   </div>
                 </Link>
-              </motion.div>
+              </div>
             ))}
+
+            {/* Special "View All Categories" Modern Dark Card */}
+            <div className="w-[300px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-72px)/4)] snap-start shrink-0">
+              <Link
+                href="/categories"
+                className="group relative flex flex-col justify-between p-7 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 rounded-3xl border border-slate-900 shadow-xl hover:shadow-2xl transition-all duration-500 h-56 text-white block transform hover:-translate-y-1.5"
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(220,38,38,0.2),transparent_50%)] rounded-3xl pointer-events-none"></div>
+                <div>
+                  <span className="text-[11px] uppercase tracking-wider text-red-400 font-bold block mb-1">
+                    Directory
+                  </span>
+                  <h3 className="text-2xl font-extrabold tracking-tight text-white leading-tight">
+                    View All <br /> Categories
+                  </h3>
+                </div>
+
+                <div className="flex justify-end relative z-10">
+                  <div className="w-11 h-11 rounded-2xl bg-white text-slate-900 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-lg">
+                    <ArrowRight size={18} />
+                  </div>
+                </div>
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="py-12 text-center text-sm text-slate-500">
             No categories found.
           </div>
         )}
-
-        {/* Mobile View All Button */}
-        <div className="mt-6 flex sm:hidden justify-center">
-          <Link
-            href="/categories"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 hover:text-red-700 transition-colors group"
-          >
-            View All Categories
-            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-          </Link>
-        </div>
       </div>
     </section>
   );
