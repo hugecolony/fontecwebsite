@@ -5,8 +5,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
-const WP_BASE_URL = 'https://fontec.local';
-
+const WP_BASE_URL = process.env.NEXT_PUBLIC_WP_URL || 'https://fontecmobiles.com';
 interface WPCategory {
   id: number;
   name: string;

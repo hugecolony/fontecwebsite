@@ -3,45 +3,23 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { ShoppingBag, Search, Menu, X, Zap } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { cn } from '@/lib/utils';
 import { NavLinks } from './NavLinks';
 import { SearchBar } from './SearchBar';
-import { CartCount } from '@/components/cart/CartCount';
 
-const WP_BASE_URL = 'https://fontecmobiles.com';
 const DEFAULT_LOGO = 'https://www.fontecmobiles.com/wp-content/uploads/2023/11/fontec-logo1.png';
 
 export function Header() {
   const openCart = useCartStore((state) => state.openCart);
+  const totalItems = useCartStore(
+    (state) => state.items?.reduce((total, item) => total + (item.quantity ?? 0), 0) || 0
+  );
 
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string>(DEFAULT_LOGO);
-  const [logoLoading, setLogoLoading] = useState(true);
-
-  // Fetch logo dynamically from WordPress REST API
-  useEffect(() => {
-    async function fetchWPLogo() {
-      try {
-        const res = await fetch(`${WP_BASE_URL}/wp-json/wp/v2/media?slug=fontec-logo1`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data[0]?.source_url) {
-            setLogoUrl(data[0].source_url);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch WordPress logo:', error);
-      } finally {
-        setLogoLoading(false);
-      }
-    }
-
-    fetchWPLogo();
-  }, []);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -49,7 +27,7 @@ export function Header() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
-  // Close mobile/tablet menu on route change
+  // Close mobile/tablet menu on route changes
   useEffect(() => {
     setMenuOpen(false);
   }, []);
@@ -74,7 +52,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setMenuOpen((v) => !v)}
-                className="lg:hidden p-2 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                className="lg:hidden p-2 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                 aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               >
                 {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -85,17 +63,15 @@ export function Header() {
                 className="hidden lg:flex items-center gap-2.5 font-bold text-xl tracking-tight text-foreground hover:opacity-90 transition-opacity"
               >
                 <div className="relative w-auto h-auto flex items-center justify-center">
-                  {logoUrl ? (
-                    <Image
-                      src={DEFAULT_LOGO}
-                      alt="Fontec Logo"
-                      width={90}
-                      height={90}
-                      className="w-[90px] h-auto object-contain drop-shadow"
-                    />
-                  ) : (
-                    <Zap size={20} className="text-accent" />
-                  )}
+                  <Image
+                    src={DEFAULT_LOGO}
+                    alt="Fontec Logo"
+                    width={90}
+                    height={90}
+                    priority
+                    unoptimized
+                    className="w-[90px] h-auto object-contain drop-shadow"
+                  />
                 </div>
               </Link>
             </div>
@@ -106,17 +82,15 @@ export function Header() {
                 href="/"
                 className="lg:hidden flex items-center justify-center hover:opacity-90 transition-opacity"
               >
-                {logoUrl ? (
-                  <Image
-                    src={DEFAULT_LOGO}
-                    alt="Fontec Logo"
-                    width={70}
-                    height={70}
-                    className="w-[70px] h-auto object-contain drop-shadow"
-                  />
-                ) : (
-                  <Zap size={18} className="text-accent" />
-                )}
+                <Image
+                  src={DEFAULT_LOGO}
+                  alt="Fontec Logo"
+                  width={70}
+                  height={70}
+                  priority
+                  unoptimized
+                  className="w-[70px] h-auto object-contain drop-shadow"
+                />
               </Link>
 
               <nav className="hidden lg:flex items-center justify-center gap-1">
@@ -129,7 +103,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setSearchOpen((v) => !v)}
-                className="p-2 sm:p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                className="p-2 sm:p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                 aria-label="Search"
               >
                 <Search size={20} />
@@ -138,11 +112,15 @@ export function Header() {
               <button
                 type="button"
                 onClick={openCart}
-                className="relative p-2 sm:p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                className="relative p-2 sm:p-2.5 rounded-xl text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                 aria-label="Open cart"
               >
                 <ShoppingBag size={20} />
-                <CartCount />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-black text-white shadow-sm">
+                    {totalItems}
+                  </span>
+                )}
               </button>
             </div>
 
