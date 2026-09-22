@@ -1,11 +1,6 @@
 {
-<<<<<<< HEAD
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     { "source": "/(.*)", "destination": "/" }
   ]
 }
-=======
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
-}
->>>>>>> 0044568ed7e85f0d3b1dd39d06556594faf33797
