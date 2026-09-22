@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ProductCard } from '@/components/product/ProductCard';
 
-const WP_BASE_URL = 'https://fontec.local';
+const WP_BASE_URL = 'https://fontecmobiles.com';
 
 interface ProductPrice {
   price: string;
