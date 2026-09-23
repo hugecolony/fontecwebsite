@@ -24,12 +24,41 @@ function wcAuthHeader(): HeadersInit {
   };
 }
 
+// ─── In-Memory Server TTL Cache Layer ───────────────────────────────────────
+
+interface CacheEntry<T> {
+  data: T;
+  expiresAt: number;
+}
+
+const memoryCache = new Map<string, CacheEntry<any>>();
+
+function getCachedMemory<T>(key: string): T | null {
+  const entry = memoryCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    memoryCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCachedMemory<T>(key: string, data: T, ttlMs: number = 300000): void {
+  memoryCache.set(key, { data, expiresAt: Date.now() + ttlMs });
+}
+
 // ─── Centralized Safe Fetch Helper ──────────────────────────────────────────
 
 async function wcFetch<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T | null> {
+  const cacheKey = `${endpoint}_${JSON.stringify(options.headers || {})}`;
+  const cachedData = getCachedMemory<T>(cacheKey);
+  if (cachedData !== null) {
+    return cachedData;
+  }
+
   const url = `${WC_BASE}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
 
   try {
@@ -48,7 +77,9 @@ async function wcFetch<T>(
       return null;
     }
 
-    return (await res.json()) as T;
+    const data = (await res.json()) as T;
+    setCachedMemory(cacheKey, data, 300000); // 5 minutes TTL in memory
+    return data;
   } catch (error: any) {
     if (error.name === 'TimeoutError' || error.name === 'AbortError') {
       console.warn(`[WC Timeout] Request to ${endpoint} exceeded ${FETCH_TIMEOUT_MS}ms threshold.`);

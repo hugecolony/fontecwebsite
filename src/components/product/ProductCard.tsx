@@ -54,6 +54,7 @@ export function ProductCard({ product, className, badge, priority = false }: Pro
   return (
     <div
       className={cn('flex flex-col relative box-border cursor-pointer group w-full pt-20 sm:pt-36', className)}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 360px' }}
     >
       <Link href={`/product/${productSlug}`} className="relative block w-full no-underline">
         
@@ -72,6 +73,7 @@ export function ProductCard({ product, className, badge, priority = false }: Pro
                 className="object-contain drop-shadow-md"
                 priority={priority}
                 loading={priority ? undefined : 'lazy'}
+                quality={75}
               />
             </div>
           </div>
