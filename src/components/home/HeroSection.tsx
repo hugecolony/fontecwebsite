@@ -197,8 +197,8 @@ export function HeroSection() {
                 alt={slide.alt}
                 fill
                 priority={index === 0}
+                fetchPriority={index === 0 ? 'high' : 'auto'}
                 loading={index === 0 ? 'eager' : 'lazy'}
-                unoptimized
                 className="object-cover object-center w-full h-full"
                 sizes="100vw"
               />
@@ -236,8 +236,8 @@ export function HeroSection() {
                 alt={slide.alt}
                 fill
                 priority={index === 0}
+                fetchPriority={index === 0 ? 'high' : 'auto'}
                 loading={index === 0 ? 'eager' : 'lazy'}
-                unoptimized
                 className="object-cover object-center w-full h-full"
                 sizes="100vw"
               />

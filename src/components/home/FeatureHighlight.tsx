@@ -147,7 +147,6 @@ export function FeatureHighlight({ wpImages }: FeatureHighlightProps) {
                       alt={images[currentIndex].altText || 'Device View'}
                       fill
                       priority
-                      unoptimized
                       sizes="(max-width: 768px) 340px, 860px"
                       className="object-contain drop-shadow-[0_35px_55px_rgba(0,0,0,0.3)] group-hover:drop-shadow-[0_45px_75px_rgba(239,68,68,0.4)] transition-all duration-300"
                     />
@@ -196,7 +195,6 @@ export function FeatureHighlight({ wpImages }: FeatureHighlightProps) {
                   src={images[currentIndex].sourceUrl}
                   alt="Zoomed View"
                   fill
-                  unoptimized
                   className="object-contain p-6 drop-shadow-[0_20px_50px_rgba(239,68,68,0.3)]"
                 />
               </div>

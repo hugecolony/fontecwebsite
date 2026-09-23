@@ -213,7 +213,6 @@ export function CategoriesSection({ categories: initialCategories }: CategoriesS
                         fill
                         sizes="128px"
                         className="object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-md"
-                        unoptimized
                       />
                     ) : (
                       <div className="text-xs text-slate-400 font-medium">No Image</div>

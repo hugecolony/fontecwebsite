@@ -37,6 +37,12 @@ export default function RootLayout({
   
   return (
     <html lang="en" className={`${inter.variable} h-full`}>
+      <head>
+        <link rel="preconnect" href="https://www.fontecmobiles.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.fontecmobiles.com" />
+        <link rel="preconnect" href="https://fontecmobiles.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fontecmobiles.com" />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <CartProvider>
           <ConfettiPopper />

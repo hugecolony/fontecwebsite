@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 
 import { HeroSection } from '@/components/home/HeroSection';
 import { CategoriesSection } from '@/components/home/CategoriesSection';
@@ -8,8 +9,14 @@ import { getProducts, getCategories } from '@/lib/woocommerce';
 import StrechedBanner from '@/components/home/StrechedBanner';
 import { FeatureHighlight } from '@/components/home/FeatureHighlight';
 import { ScrollingPromotion } from '@/components/home/ScrollingPromotion';
-import { VideoSlider } from '@/components/home/VideoSlider';
-import { ImageSlider } from '@/components/home/ImageSlider';
+
+const VideoSlider = dynamic(() => import('@/components/home/VideoSlider').then((mod) => mod.VideoSlider), {
+  ssr: true,
+});
+
+const ImageSlider = dynamic(() => import('@/components/home/ImageSlider').then((mod) => mod.ImageSlider), {
+  ssr: true,
+});
 
 import type { WCProduct, WCProductCategory } from '@/types/product';
 

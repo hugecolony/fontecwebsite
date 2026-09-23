@@ -90,7 +90,6 @@ export function Header() {
                     width={90}
                     height={90}
                     priority
-                    unoptimized
                     className="w-[90px] h-auto object-contain drop-shadow"
                   />
                 </div>
@@ -109,7 +108,6 @@ export function Header() {
                   width={70}
                   height={70}
                   priority
-                  unoptimized
                   className="w-[70px] h-auto object-contain drop-shadow"
                 />
               </Link>
