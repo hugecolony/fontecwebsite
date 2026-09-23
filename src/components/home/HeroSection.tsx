@@ -95,7 +95,12 @@ export function HeroSection() {
   const [slides] = useState<SlideContent[]>(HERO_SLIDES);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -174,6 +179,10 @@ export function HeroSection() {
       >
         {slides.map((slide, index) => {
           const isActive = index === currentSlide;
+          const shouldRender = index === 0 || (isMounted && (isActive || index === (currentSlide + 1) % slides.length || index === (currentSlide - 1 + slides.length) % slides.length));
+
+          if (!shouldRender) return null;
+
           return (
             <div
               key={slide.id}
@@ -188,6 +197,7 @@ export function HeroSection() {
                 alt={slide.alt}
                 fill
                 priority={index === 0}
+                loading={index === 0 ? 'eager' : 'lazy'}
                 unoptimized
                 className="object-cover object-center w-full h-full"
                 sizes="100vw"
@@ -208,6 +218,10 @@ export function HeroSection() {
       >
         {slides.map((slide, index) => {
           const isActive = index === currentSlide;
+          const shouldRender = index === 0 || (isMounted && (isActive || index === (currentSlide + 1) % slides.length || index === (currentSlide - 1 + slides.length) % slides.length));
+
+          if (!shouldRender) return null;
+
           return (
             <div
               key={slide.id}
@@ -222,6 +236,7 @@ export function HeroSection() {
                 alt={slide.alt}
                 fill
                 priority={index === 0}
+                loading={index === 0 ? 'eager' : 'lazy'}
                 unoptimized
                 className="object-cover object-center w-full h-full"
                 sizes="100vw"

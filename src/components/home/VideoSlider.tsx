@@ -153,6 +153,7 @@ export function VideoSlider({ videos = DEFAULT_VIDEOS }: VideoSliderProps) {
                 }}
                 src={reel.videoUrl}
                 poster={reel.posterUrl}
+                preload={isActive ? 'auto' : 'none'}
                 className="w-full h-full object-cover"
                 loop
                 playsInline

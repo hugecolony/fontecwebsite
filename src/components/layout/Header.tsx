@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { ShoppingBag, Search, Menu, X } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { cn } from '@/lib/utils';
@@ -115,7 +115,9 @@ export function Header() {
               </Link>
 
               <nav className="hidden lg:flex items-center justify-center gap-1">
-                <NavLinks />
+                <Suspense fallback={null}>
+                  <NavLinks />
+                </Suspense>
               </nav>
             </div>
 
@@ -158,7 +160,9 @@ export function Header() {
         {menuOpen && (
           <div className="lg:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-t border-black/5 dark:border-white/10 rounded-b-3xl animate-fade-in">
             <nav className="flex flex-col px-4 py-4 gap-1">
-              <NavLinks mobile onClose={() => setMenuOpen(false)} />
+              <Suspense fallback={null}>
+                <NavLinks mobile onClose={() => setMenuOpen(false)} />
+              </Suspense>
             </nav>
           </div>
         )}

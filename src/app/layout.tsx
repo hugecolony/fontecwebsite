@@ -39,14 +39,12 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <CartProvider>
-          <Suspense>
-            <ConfettiPopper/>
-            <Topbar />
-            <Header />
-            <CartDrawer />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            </Suspense>
+          <ConfettiPopper />
+          <Topbar />
+          <Header />
+          <CartDrawer />
+          <main className="flex-1">{children}</main>
+          <Footer />
         </CartProvider>
       </body>
     </html>
