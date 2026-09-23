@@ -122,7 +122,7 @@ export function CartDrawer() {
                   >
                     {/* Image */}
                     <Link
-                      href={`/shop/${item.slug}`}
+                      href={`/product/${item.slug}`}
                       onClick={closeCart}
                       className="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-slate-50 flex items-center justify-center mt-1"
                     >
@@ -138,7 +138,7 @@ export function CartDrawer() {
                     {/* Product Details */}
                     <div className="flex-1 min-w-0 pr-6">
                       <Link
-                        href={`/shop/${item.slug}`}
+                        href={`/product/${item.slug}`}
                         onClick={closeCart}
                         className="text-base font-bold text-slate-900 line-clamp-1 hover:opacity-80 transition-opacity"
                       >
