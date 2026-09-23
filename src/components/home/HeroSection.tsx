@@ -239,7 +239,7 @@ export function HeroSection() {
                 fetchPriority={index === 0 ? 'high' : 'auto'}
                 loading={index === 0 ? 'eager' : 'lazy'}
                 className="object-cover object-center w-full h-full"
-                sizes="100vw"
+                sizes="(max-width: 1200px) 90vw, 1920px"
               />
             </div>
           );
