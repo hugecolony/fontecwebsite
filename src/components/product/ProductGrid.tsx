@@ -41,8 +41,8 @@ export function ProductGrid({
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 pt-10 sm:pt-16 gap-x-3 sm:gap-x-6 gap-y-12 sm:gap-y-20 w-full">
-      {products.map((product) => (
-        <MemoizedProductCard key={product.id} product={product} />
+      {products.map((product, index) => (
+        <MemoizedProductCard key={product.id} product={product} priority={index < 4} />
       ))}
     </div>
   );

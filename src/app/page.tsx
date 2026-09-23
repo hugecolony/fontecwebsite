@@ -11,46 +11,75 @@ import { ScrollingPromotion } from '@/components/home/ScrollingPromotion';
 import { VideoSlider } from '@/components/home/VideoSlider';
 import { ImageSlider } from '@/components/home/ImageSlider';
 
-// Never throw from the page — always fall back to empty arrays so the
-// homepage renders with mock data even when WordPress is unreachable.
-async function safeGetProducts() {
+import type { WCProduct, WCProductCategory } from '@/types/product';
+
+async function AsyncCategoriesSection() {
+  let categories: WCProductCategory[] = [];
   try {
-    return await getProducts({ per_page: '8', status: 'publish' });
+    categories = await getCategories();
   } catch {
-    return [];
+    categories = [];
   }
+  return <CategoriesSection categories={categories} />;
 }
 
-async function safeGetCategories() {
+async function AsyncFeaturedProductsSection() {
+  let products: WCProduct[] = [];
   try {
-    return await getCategories();
+    products = await getProducts({ per_page: '8', status: 'publish' });
   } catch {
-    return [];
+    products = [];
   }
+  return <FeaturedProducts products={products} />;
 }
 
-export default async function HomePage() {
-  const [products, categories] = await Promise.all([
-    safeGetProducts(),
-    safeGetCategories(),
-  ]);
-
+function CategoriesSkeletonLoader() {
   return (
-    <> 
-      <Suspense fallback={null}>
-        <HeroSection/>
-        <CategoriesSection categories={categories} />
-   
-     
+    <div className="mt-16 px-4 md:px-8 max-w-screen-h mx-auto">
+      <div className="h-8 w-48 bg-slate-200 animate-pulse rounded-md mb-6" />
+      <div className="flex gap-6 overflow-x-hidden pb-4">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="w-[300px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-72px)/4)] h-56 rounded-3xl bg-slate-100 animate-pulse border border-slate-200/60 shrink-0"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FeaturedProductsSkeletonLoader() {
+  return (
+    <div className="py-16 w-full px-4 sm:px-6 lg:px-8 max-w-screen mx-auto">
+      <div className="h-8 w-64 bg-slate-200 animate-pulse rounded-md mb-8" />
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-72 rounded-3xl bg-slate-100 animate-pulse border border-slate-200/60" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <>
+      <HeroSection />
+      
+      <Suspense fallback={<CategoriesSkeletonLoader />}>
+        <AsyncCategoriesSection />
+      </Suspense>
       
       <FeatureBanner />
       <VideoSlider />
+      <FeatureHighlight />
       
-        <FeatureHighlight />
-        <FeaturedProducts products={products} />
-        
-        <ImageSlider />
+      <Suspense fallback={<FeaturedProductsSkeletonLoader />}>
+        <AsyncFeaturedProductsSection />
       </Suspense>
+      
+      <ImageSlider />
     </>
   );
 }

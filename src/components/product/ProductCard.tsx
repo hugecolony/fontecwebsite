@@ -11,9 +11,10 @@ interface ProductCardProps {
   product: WCProduct;
   className?: string;
   badge?: string;
+  priority?: boolean;
 }
 
-export function ProductCard({ product, className, badge }: ProductCardProps) {
+export function ProductCard({ product, className, badge, priority = false }: ProductCardProps) {
   const router = useRouter();
 
   const rawImages =
@@ -53,27 +54,24 @@ export function ProductCard({ product, className, badge }: ProductCardProps) {
   return (
     <div
       className={cn('flex flex-col relative box-border cursor-pointer group w-full pt-20 sm:pt-36', className)}
-      style={{ fontFamily: '"Inter", sans-serif' }}
     >
       <Link href={`/product/${productSlug}`} className="relative block w-full no-underline">
         
         {/* Main White Card Body */}
         <div
-          className="relative flex flex-col justify-between bg-white pb-3 sm:pb-4 px-3 sm:px-5 shadow-[0_10px_35px_rgba(0,0,0,0.06)] border border-slate-100 transition-all duration-300 group-hover:shadow-[0_20px_45px_rgba(0,0,0,0.12)]"
-          style={{
-            borderRadius: '2rem',
-          }}
+          className="relative flex flex-col justify-between bg-white pb-3 sm:pb-4 px-3 sm:px-5 shadow-sm hover:shadow-xl border border-slate-100 transition-shadow duration-300 rounded-[2rem]"
         >
-          {/* Floating Product Image - Adjusted negative margin for small screens */}
+          {/* Floating Product Image */}
           <div className="relative w-full z-20 flex items-center justify-center -mt-20 sm:-mt-36 mb-1 sm:mb-2">
-            <div className="relative w-full aspect-square max-w-[160px] sm:max-w-[300px] md:max-w-[340px] flex items-center justify-center p-1 sm:p-2 transition-transform duration-500 group-hover:scale-105">
+            <div className="relative w-full aspect-square max-w-[160px] sm:max-w-[300px] md:max-w-[340px] flex items-center justify-center p-1 sm:p-2 transition-transform duration-300 group-hover:scale-105">
               <Image
                 src={currentImage}
                 alt={imageAlt}
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                className="object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.15)] sm:drop-shadow-[0_20px_25px_rgba(0,0,0,0.18)]"
-                loading="lazy"
+                className="object-contain drop-shadow-md"
+                priority={priority}
+                loading={priority ? undefined : 'lazy'}
               />
             </div>
           </div>

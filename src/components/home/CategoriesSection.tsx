@@ -97,19 +97,27 @@ export function CategoriesSection({ categories: initialCategories }: CategoriesS
     fetchDynamicCategories();
   }, [initialCategories]);
 
-  // Robust Smooth Auto-Scroll Ticker Logic
+  // Robust Smooth Auto-Scroll Ticker Logic with IntersectionObserver check
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container || categories.length === 0) return;
 
     let animationFrameId: number;
     let isPaused = false;
+    let isVisible = true;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(container);
 
     const scrollStep = () => {
-      if (!isPaused && container) {
-        container.scrollLeft += 0.8; // Adjust scrolling speed here
+      if (!isPaused && isVisible && container) {
+        container.scrollLeft += 0.8;
 
-        // Seamless loop back to start
         if (container.scrollLeft >= container.scrollWidth / 2) {
           container.scrollLeft = 0;
         }
@@ -135,6 +143,7 @@ export function CategoriesSection({ categories: initialCategories }: CategoriesS
     return () => {
       clearTimeout(timer);
       cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
       if (container) {
         container.removeEventListener('mouseenter', handleMouseEnter);
         container.removeEventListener('mouseleave', handleMouseLeave);

@@ -20,14 +20,16 @@ interface ShopPageProps {
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams;
 
+  const categoriesPromise = getCategories().catch(() => []);
+
+  const categories = await categoriesPromise;
+
   const wcParams: Record<string, string> = {
-    per_page: '50',
+    per_page: '24',
     status: 'publish',
   };
 
   if (params.search) wcParams.search = params.search;
-  
-  const categories = await getCategories().catch(() => []);
 
   if (params.category && params.category !== 'all') {
     const matchedCat = categories.find((c: any) => c.slug === params.category);
@@ -54,7 +56,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const products = await getProducts(wcParams).catch(() => []);
 
   return (
-    <Suspense fallback={<div className="py-20 text-center text-slate-500">Loading shop...</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-slate-500 font-medium">Loading shop...</div>}>
       <ShopClientPage
         initialProducts={products}
         categories={categories}

@@ -68,18 +68,26 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Auto-scrolling ticker effect matching the categories section
+  // Auto-scrolling ticker effect matching the categories section with IntersectionObserver check
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container || displayProducts.length === 0) return;
 
     let animationFrameId: number;
+    let isVisible = true;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(container);
 
     const scrollStep = () => {
-      if (!isPaused && container) {
-        container.scrollLeft += 0.8; // Adjust scrolling speed here
+      if (!isPaused && isVisible && container) {
+        container.scrollLeft += 0.8;
 
-        // Seamlessly loop back to start when halfway through duplicated items
         if (container.scrollLeft >= container.scrollWidth / 2) {
           container.scrollLeft = 0;
         }
@@ -94,6 +102,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
     return () => {
       clearTimeout(timer);
       cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
     };
   }, [displayProducts, isPaused]);
 

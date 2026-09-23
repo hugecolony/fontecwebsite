@@ -28,13 +28,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
   
   if (!product) notFound();
 
-  // Fetch variations if the product type is variable
-  let variations = [];
-  if (product.type === 'variable') {
-    variations = await getProductVariations(product.id).catch(() => []);
-  }
-
-  const related = await getRelatedProducts(product.related_ids).catch(() => []);
+  // Fetch variations and related products in parallel
+  const [variations, related] = await Promise.all([
+    product.type === 'variable' ? getProductVariations(product.id).catch(() => []) : Promise.resolve([]),
+    product.related_ids && product.related_ids.length > 0
+      ? getRelatedProducts(product.related_ids).catch(() => [])
+      : Promise.resolve([]),
+  ]);
 
   return (
     <div className="max-w-screen-auto mx-auto px-4 sm:px-6 lg:px-8 py-10">

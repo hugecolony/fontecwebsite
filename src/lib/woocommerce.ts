@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { WCProduct, WCProductCategory } from '@/types/product';
 import type { WCOrder, CreateOrderPayload } from '@/types/order';
 
@@ -5,8 +6,8 @@ import type { WCOrder, CreateOrderPayload } from '@/types/order';
 const WP_HOST = (process.env.NEXT_PUBLIC_WP_URL || 'https://fontecmobiles.com').replace(/\/$/, '');
 const WC_BASE = `${WP_HOST}/wp-json/wc/v3`;
 
-// Increased timeout threshold from 8s to 15s to handle slower WordPress host responses
-const FETCH_TIMEOUT_MS = 15000;
+// Reduced timeout threshold from 15s to 8s to prevent hanging requests on slow WordPress hosts
+const FETCH_TIMEOUT_MS = 8000;
 
 function wcAuthHeader(): HeadersInit {
   const key = process.env.WC_CONSUMER_KEY || '';
@@ -60,18 +61,18 @@ async function wcFetch<T>(
 
 // ─── Variations ──────────────────────────────────────────────────────────────
 
-export async function getProductVariations(productId: number) {
+export const getProductVariations = cache(async (productId: number) => {
   const data = await wcFetch<any[]>(`/products/${productId}/variations?per_page=100`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 300 },
   });
   return data ?? [];
-}
+});
 
 // ─── Products ────────────────────────────────────────────────────────────────
 
-export async function getProducts(
+export const getProducts = cache(async (
   params: Record<string, string> = {}
-): Promise<WCProduct[]> {
+): Promise<WCProduct[]> => {
   const query = new URLSearchParams({
     per_page: '24',
     status: 'publish',
@@ -79,30 +80,30 @@ export async function getProducts(
   }).toString();
 
   const data = await wcFetch<WCProduct[]>(`/products?${query}`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 300 },
   });
 
   return data ?? [];
-}
+});
 
-export async function getProductBySlug(slug: string): Promise<WCProduct | null> {
+export const getProductBySlug = cache(async (slug: string): Promise<WCProduct | null> => {
   const encodedSlug = encodeURIComponent(slug);
   const data = await wcFetch<WCProduct[]>(`/products?slug=${encodedSlug}`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 300 },
   });
 
   if (!data || !Array.isArray(data) || data.length === 0) return null;
   return data[0] ?? null;
-}
+});
 
-export async function getProductById(id: number): Promise<WCProduct | null> {
+export const getProductById = cache(async (id: number): Promise<WCProduct | null> => {
   return wcFetch<WCProduct>(`/products/${id}`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 300 },
   });
-}
+});
 
 // Fallback: If no featured products are marked in WordPress, return recent published products
-export async function getFeaturedProducts(limit = 8): Promise<WCProduct[]> {
+export const getFeaturedProducts = cache(async (limit = 8): Promise<WCProduct[]> => {
   const featured = await getProducts({ featured: 'true', per_page: String(limit) });
   
   if (featured.length === 0) {
@@ -111,16 +112,16 @@ export async function getFeaturedProducts(limit = 8): Promise<WCProduct[]> {
   }
 
   return featured;
-}
+});
 
-export async function getRelatedProducts(ids: number[]): Promise<WCProduct[]> {
+export const getRelatedProducts = cache(async (ids: number[]): Promise<WCProduct[]> => {
   if (!ids || !ids.length) return [];
   return getProducts({ include: ids.slice(0, 4).join(','), per_page: '4' });
-}
+});
 
 // ─── Categories ──────────────────────────────────────────────────────────────
 
-export async function getCategories(): Promise<WCProductCategory[]> {
+export const getCategories = cache(async (): Promise<WCProductCategory[]> => {
   const data = await wcFetch<WCProductCategory[]>(
     `/products/categories?per_page=50&hide_empty=true`,
     {
@@ -129,7 +130,7 @@ export async function getCategories(): Promise<WCProductCategory[]> {
   );
 
   return data ?? [];
-}
+});
 
 // ─── Orders ──────────────────────────────────────────────────────────────────
 
