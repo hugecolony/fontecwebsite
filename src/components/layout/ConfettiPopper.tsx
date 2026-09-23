@@ -4,9 +4,9 @@ import { useEffect } from "react";
 
 export default function ConfettiPopper() {
   useEffect(() => {
-    let animationFrameId: number;
     let isRunning = true;
-    let timer: NodeJS.Timeout;
+    let intervalTimer: NodeJS.Timeout;
+    let stopTimer: NodeJS.Timeout;
 
     // Defer confetti initialization until 1.5s after initial page load
     const startTimer = setTimeout(() => {
@@ -15,11 +15,12 @@ export default function ConfettiPopper() {
         const confetti = confettiModule.default;
         const goldColors = ["#FFD700", "#DAA520", "#FFC107", "#FFF8DC", "#B8860B", "#F0E68C"];
 
-        const frame = () => {
+        // Fire a small burst every 150ms instead of hammering the CPU every frame (60fps)
+        intervalTimer = setInterval(() => {
           if (!isRunning) return;
 
           confetti({
-            particleCount: 2,
+            particleCount: 5,
             angle: 90,
             spread: 360,
             startVelocity: 15,
@@ -34,26 +35,21 @@ export default function ConfettiPopper() {
             drift: Math.random() - 0.5,
             ticks: 300,
           });
+        }, 150);
 
-          animationFrameId = requestAnimationFrame(frame);
-        };
-
-        frame();
-
-        timer = setTimeout(() => {
+        // Stop the confetti after 3 seconds
+        stopTimer = setTimeout(() => {
           isRunning = false;
-          cancelAnimationFrame(animationFrameId);
+          clearInterval(intervalTimer);
         }, 3000);
-      }).catch(() => {});
+      }).catch(() => { });
     }, 1500);
 
     return () => {
       isRunning = false;
       clearTimeout(startTimer);
-      clearTimeout(timer);
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
+      clearInterval(intervalTimer);
+      clearTimeout(stopTimer);
     };
   }, []);
 
