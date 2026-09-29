@@ -13,6 +13,11 @@ const nextConfig = {
         hostname: 'www.fontecmobiles.com',
         pathname: '/wp-content/uploads/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/tmyogcu6/**',
+      },
     ],
   },
 };
