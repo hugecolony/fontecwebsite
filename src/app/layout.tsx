@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { Topbar } from '@/components/layout/Topbar';
+import { SmoothScroll } from '@/components/SmoothScroll';
 import ConfettiPopper from '@/components/layout/ConfettiPopper'
 import { Suspense } from 'react';
 const inter = Inter({
@@ -35,7 +36,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  
+
   return (
     <html lang="en" className={`${inter.variable} h-full`}>
       <head>
@@ -50,7 +51,7 @@ export default function RootLayout({
           <Topbar />
           <Header />
           <CartDrawer />
-          <main className="flex-1">{children}</main>
+          <SmoothScroll >{children}</SmoothScroll>
           <Footer />
         </CartProvider>
       </body>

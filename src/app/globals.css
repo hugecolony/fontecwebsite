@@ -23,10 +23,6 @@ html {
   color-scheme: light;
 }
 
-body {
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
 
 /* ─── Global Base Styles & CSS Variables ──────────────────────────────── */
 :root {
@@ -268,4 +264,49 @@ body::after {
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
+}
+
+body {
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Prevents layout bouncing on some browsers */
+    height: 100%;
+  }
+
+  body {
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Forces GPU text rendering for smoother movement */
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Add this utility for any horizontal or custom scroll container */
+.smooth-container {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.smooth-container::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+/* Apply this to fixed navbars, floating elements, or heavy cards */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.card-hover {
+  will-change: transform, opacity;
 }
