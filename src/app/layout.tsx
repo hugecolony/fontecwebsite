@@ -7,9 +7,8 @@ import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { Topbar } from '@/components/layout/Topbar';
 import { SmoothScroll } from '@/components/SmoothScroll';
-import ConfettiPopper from '@/components/layout/ConfettiPopper';
+import ConfettiPopper from '@/components/layout/ConfettiPopper'
 import { Suspense } from 'react';
-
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -37,6 +36,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <html lang="en" className={`${inter.variable} h-full`}>
       <head>
@@ -46,16 +46,16 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://fontecmobiles.com" />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
-        <SmoothScroll>
-          <CartProvider>
+        <CartProvider>
+          <SmoothScroll>
             <ConfettiPopper />
             <Topbar />
             <Header />
             <CartDrawer />
             <main className="flex-1">{children}</main>
             <Footer />
-          </CartProvider>
-        </SmoothScroll>
+          </SmoothScroll>
+        </CartProvider>
       </body>
     </html>
   );
