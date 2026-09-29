@@ -47,14 +47,12 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <CartProvider>
-          <SmoothScroll>
-            <ConfettiPopper />
-            <Topbar />
-            <Header />
-            <CartDrawer />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </SmoothScroll>
+          <ConfettiPopper />
+          <Topbar />
+          <Header />
+          <CartDrawer />
+          <main className="flex-1">{children}</main>
+          <Footer />
         </CartProvider>
       </body>
     </html>
