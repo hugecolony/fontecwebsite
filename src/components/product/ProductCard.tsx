@@ -57,7 +57,7 @@ export function ProductCard({ product, className, badge, priority = false }: Pro
       style={{ contentVisibility: 'auto', containIntrinsicSize: '1px 360px' }}
     >
       <Link href={`/product/${productSlug}`} className="relative block w-full no-underline">
-        
+
         {/* Main White Card Body */}
         <div
           className="relative flex flex-col justify-between bg-white pb-3 sm:pb-4 px-3 sm:px-5 shadow-sm hover:shadow-xl border border-slate-100 transition-shadow duration-300 rounded-[2rem]"
@@ -69,10 +69,9 @@ export function ProductCard({ product, className, badge, priority = false }: Pro
                 src={currentImage}
                 alt={imageAlt}
                 fill
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                className="object-contain drop-shadow-md"
-                priority={priority}
-                loading={priority ? undefined : 'lazy'}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
                 quality={75}
               />
             </div>

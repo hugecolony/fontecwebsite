@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
@@ -58,68 +58,29 @@ const MOCK_PRODUCTS: WCProduct[] = Array.from({ length: 8 }, (_, i) => ({
 }));
 
 interface FeaturedProductsProps {
-  products: WCProduct[];
+  products?: WCProduct[];
 }
 
-export function FeaturedProducts({ products }: FeaturedProductsProps) {
+export function FeaturedProducts({ products = [] }: FeaturedProductsProps) {
   const displayProducts = products.length > 0 ? products : MOCK_PRODUCTS;
-  const duplicatedProducts = [...displayProducts, ...displayProducts]; // Double array for smooth infinite loop
-  
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
-
-  // Auto-scrolling ticker effect matching the categories section with IntersectionObserver check
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container || displayProducts.length === 0) return;
-
-    let animationFrameId: number;
-    let isVisible = true;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting;
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(container);
-
-    const scrollStep = () => {
-      if (!isPaused && isVisible && container) {
-        container.scrollLeft += 0.8;
-
-        if (container.scrollLeft >= container.scrollWidth / 2) {
-          container.scrollLeft = 0;
-        }
-      }
-      animationFrameId = requestAnimationFrame(scrollStep);
-    };
-
-    const timer = setTimeout(() => {
-      animationFrameId = requestAnimationFrame(scrollStep);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timer);
-      cancelAnimationFrame(animationFrameId);
-      observer.disconnect();
-    };
-  }, [displayProducts, isPaused]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const { clientWidth } = scrollContainerRef.current;
+      // Scroll by roughly 75% of the container view width for a clean step
+      const scrollAmount = clientWidth * 0.75;
       scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -clientWidth * 0.75 : clientWidth * 0.75,
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
       });
     }
   };
 
   return (
-    <section className="py-16 w-full px-4 sm:px-6 lg:px-8 overflow-hidden bg-white">
+    <section className="py-16 w-full px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
       <div className="max-w-screen mx-auto">
-        {/* Header */}
+        {/* Header Section */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
@@ -137,8 +98,8 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Desktop Navigation Arrows */}
-            <div className="hidden sm:flex items-center gap-2">
+            {/* Navigation Arrows */}
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => scroll('left')}
                 aria-label="Scroll left"
@@ -164,17 +125,14 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
           </div>
         </div>
 
-        {/* Auto-Scrolling Motion Container */}
+        {/* Product Carousel Container */}
         <div
           ref={scrollContainerRef}
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          className="flex gap-6 overflow-x-hidden pb-6 pt-2 select-none"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          className="flex gap-6 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none]"
         >
-          {duplicatedProducts.map((product, index) => (
+          {displayProducts.map((product) => (
             <div
-              key={`${product.id}-${index}`}
+              key={product.id}
               className="w-[280px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-72px)/4)] shrink-0 snap-start"
             >
               <ProductCard product={product} />
